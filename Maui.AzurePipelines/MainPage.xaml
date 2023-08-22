@@ -1,0 +1,206 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="PipelineApproval.MainPage"
+             xmlns:local="clr-namespace:PipelineApproval"
+             x:DataType="local:MainPageViewModel"
+             BackgroundColor="#201f1e">
+
+    <Grid RowDefinitions="80,*">
+        <StackLayout Padding="16,0"
+                     Spacing="15"
+                     Orientation="Horizontal">
+            <StackLayout HorizontalOptions="FillAndExpand"
+                         Spacing="5"
+                         Orientation="Vertical">
+
+                <Entry HorizontalOptions="FillAndExpand"
+                       PlaceholderColor="Gray"
+                       HeightRequest="38"
+                       Placeholder="(Personal AccesToken)"
+                       Text="{Binding PAT}"
+                       IsPassword="True"
+                       TextColor="Black"
+                       BackgroundColor="White"/>
+
+                <Entry HorizontalOptions="FillAndExpand"
+                       PlaceholderColor="Gray"
+                       HeightRequest="38"
+                       Placeholder="(Url)"
+                       Text="{Binding Url}"
+                       TextColor="Black"
+                       BackgroundColor="White"/>
+            </StackLayout>
+
+            <Button BackgroundColor="#0078d4"
+                    Text="Carregar"
+                    HeightRequest="48"
+                    TextColor="White"
+                    CornerRadius="0"
+                    VerticalOptions="End"
+                    Clicked="Button_Clicked"
+                    HorizontalOptions="End" />
+        </StackLayout>
+        
+        
+        <CollectionView Grid.Row="1" ItemsSource="{Binding Approvals}">
+            <CollectionView.ItemTemplate>
+                <DataTemplate>
+                    <Frame IsClippedToBounds="True"
+                           CornerRadius="1"
+                           HasShadow="True"
+                           BackgroundColor="#201f1e"
+                           BorderColor="White"
+                           Padding="6"
+                           x:DataType="local:Approval"
+                           Margin="8">
+                        <StackLayout
+                            Spacing="3"
+                            Padding="6"
+                            Orientation="Vertical"
+                            BackgroundColor="#201f1e"
+                            VerticalOptions="Center">
+
+                            <Label TextColor="White"
+                                   VerticalTextAlignment="Center">
+                                <Label.FormattedText>
+                                    <FormattedString >
+                                        <FormattedString.Spans>
+                                            <Span Text="Pipeline: " FontAttributes="Bold" />
+                                            <Span Text="{Binding pipeline.name}" />
+                                        </FormattedString.Spans>
+                                    </FormattedString>
+                                </Label.FormattedText>
+                            </Label>
+
+                            <Label TextColor="White"
+                                   VerticalTextAlignment="Center">
+                                <Label.FormattedText>
+                                    <FormattedString >
+                                        <FormattedString.Spans>
+                                            <Span Text="BuildName: " FontAttributes="Bold" />
+                                            <Span Text="{Binding pipeline.owner.name}" />
+                                        </FormattedString.Spans>
+                                    </FormattedString>
+                                </Label.FormattedText>
+                            </Label>
+                        
+                            <Label TextColor="White"
+                                   VerticalTextAlignment="Center">
+                                <Label.FormattedText>
+                                    <FormattedString >
+                                        <FormattedString.Spans>
+                                            <Span Text="Stage: " FontAttributes="Bold" />
+                                            <Span Text="{Binding stageRecord.name}" />
+                                        </FormattedString.Spans>
+                                    </FormattedString>
+                                </Label.FormattedText>
+                            </Label>
+
+
+                            <Label Text="Aprovadores:"
+                                   Margin="0,15,0,5"
+                                   FontAttributes="Bold"
+                                   TextColor="White"
+                                   VerticalTextAlignment="Center"/>
+
+                            <ScrollView Orientation="Horizontal"
+                                        HorizontalScrollBarVisibility="Never"
+                                        VerticalScrollBarVisibility="Never">
+                                <StackLayout BindableLayout.ItemsSource="{Binding steps}"
+                                         Spacing="10"
+                                         Orientation="Horizontal">
+                                    <BindableLayout.ItemTemplate>
+                                        <DataTemplate>
+
+                                            <Frame x:DataType="local:Step"
+                                                   BorderColor="#0078d4"
+                                                   CornerRadius="3"
+                                                   Padding="5"
+                                                   BackgroundColor="#201f1e">
+                                                <StackLayout Spacing="5" Orientation="Vertical">
+                                                    <Label TextColor="White"
+                                                   VerticalTextAlignment="Center">
+                                                        <Label.FormattedText>
+                                                            <FormattedString >
+                                                                <FormattedString.Spans>
+                                                                    <Span Text="Name: " FontAttributes="Bold" />
+                                                                    <Span Text="{Binding assignedApprover.displayName}" />
+                                                                </FormattedString.Spans>
+                                                            </FormattedString>
+                                                        </Label.FormattedText>
+                                                    </Label>
+
+                                                    <Label TextColor="White"
+                                                   VerticalTextAlignment="Center">
+                                                        <Label.FormattedText>
+                                                            <FormattedString >
+                                                                <FormattedString.Spans>
+                                                                    <Span Text="Status: " FontAttributes="Bold" />
+                                                                    <Span Text="{Binding status}" />
+                                                                </FormattedString.Spans>
+                                                            </FormattedString>
+                                                        </Label.FormattedText>
+                                                    </Label>
+                                                </StackLayout>
+                                            </Frame>
+                                        
+                                        </DataTemplate>
+                                    </BindableLayout.ItemTemplate>
+
+                                </StackLayout>
+
+                            </ScrollView>
+                        
+
+                            <StackLayout Margin="0,25,0,5" Spacing="10" Orientation="Horizontal">
+                                <Entry HorizontalOptions="FillAndExpand"
+                                       PlaceholderColor="Gray"
+                                       Placeholder="(Comentário)"
+                                       Text="{Binding Comment}"
+                                       TextColor="Black"
+                                       BackgroundColor="White"/>
+                            
+                                <Button
+                                    BackgroundColor="#0078d4"
+                                    Text="Aprovar"
+                                    TextColor="White"
+                                    CornerRadius="0"
+                                    Command="{Binding ApproveCommand}"
+                                    CommandParameter="{Binding .}"
+                                    HorizontalOptions="End" />
+                            </StackLayout>
+                        
+                        
+
+                        </StackLayout>
+                        <Frame.Shadow>
+                            <Shadow Radius="3" Offset="3,3"/>
+                        </Frame.Shadow>
+                    </Frame>
+                
+                </DataTemplate>
+            
+            </CollectionView.ItemTemplate>
+
+            <CollectionView.EmptyViewTemplate>
+                <DataTemplate>
+                    <StackLayout>
+                        <Label VerticalTextAlignment="Center"
+                               HorizontalTextAlignment="Center"
+                               Text="Sem dados para mostrar" TextColor="White"/>
+                    </StackLayout>
+                </DataTemplate>
+            </CollectionView.EmptyViewTemplate>
+        </CollectionView>
+
+        <StackLayout Grid.RowSpan="2" IsVisible="{Binding IsBusy}" BackgroundColor="#CCffffff">
+            <ActivityIndicator IsEnabled="True" Color="Blue" VerticalOptions="CenterAndExpand" IsRunning="True"/>
+            <StackLayout.GestureRecognizers>
+                <TapGestureRecognizer />
+            </StackLayout.GestureRecognizers>
+        </StackLayout>
+    </Grid>
+
+
+</ContentPage>
