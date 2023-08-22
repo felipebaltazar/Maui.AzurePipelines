@@ -1,2 +1,2 @@
 # Maui.AzurePipelines
-Utilitários para MAUI
+Utilitários para Azure Pipelines feito em MAUI
