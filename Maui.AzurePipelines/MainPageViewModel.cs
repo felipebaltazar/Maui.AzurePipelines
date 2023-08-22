@@ -14,7 +14,7 @@ public class MainPageViewModel : BindableObject
     private string _pat;
     private string _url;
     private bool _isBusy;
-    
+
     private string company;
     private string project;
     private string buildId;
@@ -25,9 +25,11 @@ public class MainPageViewModel : BindableObject
         set
         {
             if (value != _approvals)
-                MainThread.BeginInvokeOnMainThread(() => OnPropertyChanged(nameof(Approvals)));
+            {
+                _approvals = value;
+                TryInvokeOnMainThread(() => OnPropertyChanged(nameof(Approvals)));
+            }
 
-            _approvals = value;
         }
     }
 
@@ -37,9 +39,10 @@ public class MainPageViewModel : BindableObject
         set
         {
             if (value != _pat)
-                MainThread.BeginInvokeOnMainThread(() => OnPropertyChanged(nameof(PAT)));
-
-            _pat = value;
+            {
+                _pat = value;
+                TryInvokeOnMainThread(() => OnPropertyChanged(nameof(PAT)));
+            }
         }
     }
 
@@ -49,9 +52,11 @@ public class MainPageViewModel : BindableObject
         set
         {
             if (value != _isBusy)
-                MainThread.BeginInvokeOnMainThread(() => OnPropertyChanged(nameof(IsBusy)));
+            {
+                _isBusy = value;
+                TryInvokeOnMainThread(() => OnPropertyChanged(nameof(IsBusy)));
+            }
 
-            _isBusy = value;
         }
     }
 
@@ -61,9 +66,12 @@ public class MainPageViewModel : BindableObject
         set
         {
             if (value != _url)
-                MainThread.BeginInvokeOnMainThread(() => OnPropertyChanged(nameof(Url)));
+            {
+                _url = value;
 
-            _url = value;
+                TryInvokeOnMainThread(() => OnPropertyChanged(nameof(Url)));
+            }
+
         }
     }
 
@@ -101,7 +109,7 @@ public class MainPageViewModel : BindableObject
 
         try
         {
-             IsBusy = true;
+            IsBusy = true;
 
             var uri = new Uri(Url);
             if (uri.Authority.IndexOf("dev.azure.com") >= 0)
@@ -250,6 +258,15 @@ public class MainPageViewModel : BindableObject
                 }
             }
         }
+    }
+
+    private void TryInvokeOnMainThread(Action action)
+    {
+        if (MainThread.IsMainThread)
+            action.Invoke();
+
+        else
+            MainThread.BeginInvokeOnMainThread(action);
     }
 }
 
