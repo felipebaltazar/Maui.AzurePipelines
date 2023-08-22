@@ -1,7 +1,4 @@
-﻿using Android.Icu.Util;
-using System.Runtime.CompilerServices;
-
-namespace PipelineApproval;
+﻿namespace PipelineApproval;
 
 public partial class MainPage : ContentPage
 {
