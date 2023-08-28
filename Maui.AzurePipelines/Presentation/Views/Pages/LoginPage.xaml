@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage
+    x:Class="PipelineApproval.Presentation.Views.Pages.LoginPage"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:local="clr-namespace:PipelineApproval.Presentation.ViewModels.Pages"
+    Title="LoginPage"
+    x:DataType="local:LoginPageViewModel"
+    BackgroundColor="{DynamicResource System_Background_Primary}"
+    NavigationPage.HasNavigationBar="False">
+    <Grid
+        x:Name="container"
+        Padding="40"
+        ColumnDefinitions="*,48"
+        Opacity="{x:Bind IsReady ? 1 : 0}"
+        RowDefinitions="200,130,48,*,48"
+        RowSpacing="16">
+
+        <Image
+            Grid.ColumnSpan="2"
+            HeightRequest="180"
+            Source="logo" />
+
+        <Entry
+            x:Name="patField"
+            Grid.Row="1"
+            Grid.ColumnSpan="2"
+            FontFamily="OpenSansSemibold"
+            FontSize="16"
+            HeightRequest="80"
+            HorizontalTextAlignment="Center"
+            IsPassword="True"
+            Placeholder="(Personal Access Token)"
+            PlaceholderColor="LightGray"
+            Text="{x:Bind PAT, Mode=TwoWay}"
+            TextColor="White"
+            VerticalOptions="Center" />
+
+        <ImageButton
+            Grid.Row="1"
+            Grid.Column="2"
+            Padding="6"
+            Clicked="ImageButton_Clicked"
+            HeightRequest="48"
+            HorizontalOptions="EndAndExpand"
+            Source="eye_regular"
+            VerticalOptions="Center" />
+
+        <Button
+            Grid.Row="2"
+            Grid.ColumnSpan="2"
+            BackgroundColor="#0078d4"
+            Command="{x:Bind LoginCommand}"
+            CornerRadius="0"
+            FontFamily="OpenSansSemibold"
+            HeightRequest="48"
+            Text="Entrar"
+            TextColor="White" />
+
+        <Label
+            Grid.Row="3"
+            Grid.ColumnSpan="2"
+            FontFamily="OpenSansSemibold"
+            FontSize="12"
+            Text="Como gerar um Personal Access Token?"
+            TextColor="White"
+            TextDecorations="Underline"
+            VerticalTextAlignment="Start">
+            <Label.GestureRecognizers>
+                <TapGestureRecognizer Command="{x:Bind DocumentationCommand}" />
+            </Label.GestureRecognizers>
+        </Label>
+
+        <Label
+            Grid.Row="4"
+            FontSize="16"
+            TextColor="White"
+            TextDecorations="Underline"
+            VerticalTextAlignment="End">
+            <Label.FormattedText>
+                <FormattedString>
+                    <Span FontFamily="OpenSansRegular" Text="Confira o repositório no " />
+                    <Span FontFamily="OpenSansSemibold" Text="Github ❤" />
+                </FormattedString>
+            </Label.FormattedText>
+            <Label.GestureRecognizers>
+                <TapGestureRecognizer Command="{x:Bind GithubrepositoryCommand}" />
+            </Label.GestureRecognizers>
+        </Label>
+    </Grid>
+</ContentPage>

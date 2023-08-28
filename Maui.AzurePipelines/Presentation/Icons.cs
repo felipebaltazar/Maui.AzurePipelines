@@ -1,0 +1,52 @@
+﻿namespace PipelineApproval;
+
+static class Icons
+{
+    public const string Userstory = "\ue800";
+    public const string Task = "\ue803";
+    public const string Sun = "\ue804";
+    public const string Success = "\ue805";
+    public const string Share = "\ue806";
+    public const string Settings = "\ue807";
+    public const string Search = "\ue808";
+    public const string Failedsolid = "\ue809";
+    public const string Queued = "\ue80a";
+    public const string Queuedsolid = "\ue80b";
+    public const string Pullrequest = "\ue80c";
+    public const string Profile = "\ue80d";
+    public const string Pipeline = "\ue80e";
+    public const string MoonStar = "\ue810";
+    public const string Merge = "\ue811";
+    public const string LogOut = "\ue812";
+    public const string Link = "\ue813";
+    public const string Languages = "\ue814";
+    public const string Issue = "\ue815";
+    public const string Home = "\ue816";
+    public const string FolderCode = "\ue817";
+    public const string Filter = "\ue818";
+    public const string Feature = "\ue819";
+    public const string Edit = "\ue81a";
+    public const string Failed = "\ue81b";
+    public const string Skipped = "\ue81c";
+    public const string Commit = "\ue81d";
+    public const string ClipboardX = "\ue81e";
+    public const string ClipboardMinus = "\ue81f";
+    public const string ClipboardPlus = "\ue820";
+    public const string Cancelled = "\ue821";
+    public const string Clearcache = "\ue822";
+    public const string Bug = "\ue823";
+    public const string Epic = "\ue824";
+    public const string Testcase = "\ue825";
+    public const string Project = "\ue826";
+    public const string GithubMark = "\ue827";
+    public const string Runningsolid = "\ue828";
+    public const string Cancelledsolid = "\ue829";
+    public const string Running = "\ue82a";
+    public const string DotsHorizontal = "\ue82b";
+    public const string List = "\ue82c";
+    public const string Plus = "\ue830";
+    public const string Users = "\ue831";
+    public const string Tool1 = "\ue832";
+    public const string Phone = "\ue833";
+    public const string Mail = "\ue834";
+}

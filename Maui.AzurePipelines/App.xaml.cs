@@ -1,12 +1,37 @@
-﻿namespace PipelineApproval;
+﻿using PipelineApproval.Abstractions;
+using PipelineApproval.Infrastructure.Extensions;
+
+[assembly: XamlCompilation(XamlCompilationOptions.Compile)]
+namespace PipelineApproval;
 
 public partial class App : Application
 {
-	public App()
-	{
-		UserAppTheme = AppTheme.Dark;
-		InitializeComponent();
+    private readonly INavigationService _navigationService;
 
-		MainPage = new AppShell();
-	}
+    public App(INavigationService navigationService)
+    {
+        _navigationService = navigationService;
+        UserAppTheme = AppTheme.Dark;
+
+        InitializeComponent();
+        MainPage = _navigationService.InitializeNavigation();
+    }
+
+    protected override void OnStart()
+    {
+        base.OnStart();
+        MainPage.RaiseOnNavigatedTo(new Dictionary<string, string>(0));
+    }
+
+    protected override void OnResume()
+    {
+        base.OnResume();
+        MainPage?.RaiseOnResumedAware();
+    }
+
+    protected override void OnSleep()
+    {
+        base.OnSleep();
+        MainPage?.RaiseOnPausedAware();
+    }
 }

@@ -16,8 +16,8 @@
 		<ApplicationIdGuid>0ca34389-c908-4e1f-a379-616128afa759</ApplicationIdGuid>
 
 		<!-- Versions -->
-		<ApplicationDisplayVersion>1.1</ApplicationDisplayVersion>
-		<ApplicationVersion>2</ApplicationVersion>
+		<ApplicationDisplayVersion>1.2</ApplicationDisplayVersion>
+		<ApplicationVersion>3</ApplicationVersion>
 
 		<SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'ios'">11.0</SupportedOSPlatformVersion>
 		<SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'android'">21.0</SupportedOSPlatformVersion>
@@ -28,33 +28,48 @@
 	  <CodesignEntitlements>Platforms\iOS\Entitlements.plist</CodesignEntitlements>
 	  <CodesignKey>iPhone Developer</CodesignKey>
 	</PropertyGroup>
+  
 	<PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|net7.0-ios|AnyCPU'">
 	  <CreatePackage>false</CreatePackage>
 	  <CodesignKey>Apple Distribution: Felipe Baltazar (2L36GLR2GS)</CodesignKey>
 	  <CodesignProvision>Apple Distribution Devops Approval</CodesignProvision>
 	</PropertyGroup>
+  
 	<ItemGroup>
-		<!-- App Icon -->
-		<MauiIcon Include="Resources\AppIcon\appicon.svg" ForegroundFile="Resources\AppIcon\appiconfg.svg" Color="#0078d4" />
-
-		<!-- Splash Screen -->
-		<MauiSplashScreen Include="Resources\Splash\splash.svg" Color="#0078d4" BaseSize="448,512" />
 
 		<!-- Images -->
 		<MauiImage Include="Resources\Images\*" />
-		<MauiImage Update="Resources\Images\dotnet_bot.svg" BaseSize="168,208" />
 
 		<!-- Custom Fonts -->
 		<MauiFont Include="Resources\Fonts\*" />
 
 		<!-- Raw Assets (also remove the "Resources\Raw" prefix) -->
 		<MauiAsset Include="Resources\Raw\**" LogicalName="%(RecursiveDir)%(Filename)%(Extension)" />
-	</ItemGroup>
 
+    <!-- Android native resources -->
+	  <AndroidResource Include="Platforms\Android\drawable\**" />
+    <AndroidResource Include="Platforms\Android\layout\**" />
+    <AndroidResource Include="Platforms\Android\mipmap*\**" />
+    <None Remove="Resources\Images\eye_regular.svg" />
+    <Folder Include="Data\" />
+
+  </ItemGroup>
+
+  <!-- Packages -->
 	<ItemGroup>
+		<PackageReference Include="CompiledBindings.MAUI" Version="1.0.16" />
 		<PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="7.0.0" />
+		<PackageReference Include="Mopups" Version="1.1.1" />
+		<PackageReference Include="Polly" Version="7.2.4" />
+		<PackageReference Include="Refit" Version="7.0.0" />
 	</ItemGroup>
-
-	<ProjectExtensions><VisualStudio><UserProperties XamarinHotReloadDebuggerTimeoutExceptionPipelineApprovalHideInfoBar="True" /></VisualStudio></ProjectExtensions>
+	<ItemGroup>
+	  <MauiXaml Update="Presentation\Views\Controls\SelectOrganizationPopup.xaml">
+	    <Generator>MSBuild:Compile</Generator>
+	  </MauiXaml>
+	  <MauiXaml Update="Presentation\Views\Pages\LoginPage.xaml">
+	    <Generator>MSBuild:Compile</Generator>
+	  </MauiXaml>
+	</ItemGroup>
 
 </Project>

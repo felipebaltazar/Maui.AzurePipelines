@@ -4,6 +4,8 @@ Utilitários para Azure Pipelines feito em MAUI
 
 ## Utilização
 
+https://learn.microsoft.com/en-us/azure/devops/organizations/accounts/use-personal-access-tokens-to-authenticate?view=azure-devops&tabs=Windows
+
 No AzureDevops navegue até Personal Access Token
 
 ![image](https://github.com/felipebaltazar/Maui.AzurePipelines/assets/19656249/26103459-383d-440b-952b-c02162ffbbe6)

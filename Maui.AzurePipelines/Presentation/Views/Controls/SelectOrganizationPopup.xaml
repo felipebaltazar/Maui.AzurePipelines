@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<Mopups:PopupPage
+    x:Class="PipelineApproval.Presentation.Views.Controls.SelectOrganizationPopup"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:Animations="clr-namespace:Mopups.Animations;assembly=Mopups"
+    xmlns:Mopups="clr-namespace:Mopups.Pages;assembly=Mopups"
+    xmlns:models="clr-namespace:PipelineApproval.Models"
+    BackgroundColor="Transparent"
+    BackgroundInputTransparent="False"
+    CloseWhenBackgroundIsClicked="false"
+    HasSystemPadding="False">
+    <Mopups:PopupPage.Animation>
+        <Animations:MoveAnimation
+            HasBackgroundAnimation="False"
+            PositionIn="Top"
+            PositionOut="Top" />
+    </Mopups:PopupPage.Animation>
+
+    <Frame
+        Padding="0,60,0,0"
+        BackgroundColor="#201f1e"
+        BorderColor="#424242"
+        CornerRadius="16"
+        HeightRequest="320"
+        VerticalOptions="StartAndExpand">
+        <StackLayout Orientation="Vertical">
+            <Label
+                Margin="8"
+                FontAttributes="Bold"
+                FontSize="16"
+                HorizontalTextAlignment="Center"
+                Text="Selecione a organização"
+                TextColor="White" />
+
+            <ScrollView
+                HorizontalScrollBarVisibility="Never"
+                Orientation="Vertical"
+                VerticalScrollBarVisibility="Never">
+                <StackLayout x:Name="containerItems">
+                    <BindableLayout.ItemTemplate>
+                        <DataTemplate>
+                            <Frame
+                                Margin="8"
+                                Padding="8"
+                                x:DataType="models:AccountInfo"
+                                BackgroundColor="#424242"
+                                BorderColor="#424242"
+                                CornerRadius="8"
+                                HeightRequest="48">
+                                <StackLayout
+                                    Padding="16,0"
+                                    Orientation="Horizontal"
+                                    Spacing="16">
+                                    <Frame
+                                        Padding="4"
+                                        BackgroundColor="White"
+                                        BorderColor="White"
+                                        CornerRadius="16"
+                                        HeightRequest="32"
+                                        WidthRequest="32">
+                                        <Image Source="logo" />
+                                    </Frame>
+
+                                    <Label
+                                        FontAttributes="Bold"
+                                        FontSize="20"
+                                        HorizontalTextAlignment="Center"
+                                        Text="{x:Bind accountName}"
+                                        TextColor="White"
+                                        VerticalTextAlignment="Center" />
+                                </StackLayout>
+                                <Frame.GestureRecognizers>
+                                    <TapGestureRecognizer CommandParameter="{Binding .}" Tapped="TapGestureRecognizer_Tapped" />
+                                </Frame.GestureRecognizers>
+                            </Frame>
+
+                        </DataTemplate>
+                    </BindableLayout.ItemTemplate>
+                </StackLayout>
+            </ScrollView>
+
+            <BoxView
+                Margin="8"
+                CornerRadius="2"
+                HeightRequest="4"
+                HorizontalOptions="Center"
+                VerticalOptions="End"
+                WidthRequest="80"
+                Color="#424242" />
+        </StackLayout>
+
+    </Frame>
+</Mopups:PopupPage>

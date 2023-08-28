@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<Mopups:PopupPage
+    x:Class="PipelineApproval.Presentation.Views.Controls.AlertPopup"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:Animations="clr-namespace:Mopups.Animations;assembly=Mopups"
+    xmlns:Mopups="clr-namespace:Mopups.Pages;assembly=Mopups"
+    BackgroundColor="{DynamicResource Overlay_Background}"
+    BackgroundInputTransparent="False"
+    CloseWhenBackgroundIsClicked="false"
+    HasSystemPadding="False">
+    <Mopups:PopupPage.Animation>
+        <Animations:FadeAnimation />
+    </Mopups:PopupPage.Animation>
+    <Frame
+        Margin="40,0"
+        BackgroundColor="{DynamicResource System_Background_Primary}"
+        BorderColor="White"
+        CornerRadius="6"
+        HasShadow="False"
+        VerticalOptions="Center">
+        <StackLayout Orientation="Vertical" Spacing="8">
+            <Label
+                x:Name="titleLabel"
+                FontSize="16"
+                Text="Alert"
+                TextColor="White" />
+
+            <Label x:Name="description" TextColor="White" />
+
+            <Button
+                x:Name="cancelButton"
+                BackgroundColor="#0078d4"
+                Clicked="Button_Clicked"
+                CornerRadius="0"
+                HeightRequest="48"
+                HorizontalOptions="Center"
+                Text="Cancel"
+                TextColor="White"
+                VerticalOptions="Center" />
+        </StackLayout>
+    </Frame>
+</Mopups:PopupPage>
