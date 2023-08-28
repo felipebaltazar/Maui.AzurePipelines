@@ -1,4 +1,6 @@
-﻿using PipelineApproval.Presentation.ViewModels.Pages;
+﻿using AsyncAwaitBestPractices;
+using PipelineApproval.Models;
+using PipelineApproval.Presentation.ViewModels.Pages;
 
 namespace PipelineApproval.Presentation.Views.Pages;
 
@@ -16,4 +18,3 @@ public partial class MainPage : ContentPage
         _ = Task.Run(ViewModel.LoadDataAsync);
     }
 }
-

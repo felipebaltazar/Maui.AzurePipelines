@@ -79,16 +79,15 @@
 
                             <Frame
                                 Padding="0"
-                                BackgroundColor="{x:Bind GenerateColor()}"
-                                BorderColor="{x:Bind GenerateColor()}"
                                 CornerRadius="3"
                                 HeightRequest="30"
+                                IsClippedToBounds="True"
                                 WidthRequest="30">
-                                <Label
-                                    FontSize="18"
-                                    HorizontalTextAlignment="Center"
-                                    Text="{x:Bind name.Substring(0, 1)}"
-                                    VerticalTextAlignment="Center" />
+                                <Image
+                                    Aspect="AspectFill"
+                                    HeightRequest="30"
+                                    Source="{x:Bind TeamImageFile}"
+                                    WidthRequest="30" />
                             </Frame>
 
                             <Label
@@ -129,7 +128,9 @@
                                 WidthRequest="6"
                                 Color="Gray" />
                         </Grid>
-
+                        <Frame.GestureRecognizers>
+                            <TapGestureRecognizer Command="{x:Bind NavigateToProjectCommand}" />
+                        </Frame.GestureRecognizers>
                     </Frame>
                 </DataTemplate>
             </CollectionView.ItemTemplate>

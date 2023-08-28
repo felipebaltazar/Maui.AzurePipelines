@@ -17,8 +17,8 @@ public sealed class NavigationService : INavigationService
 
     private readonly IServiceProvider _serviceProvider;
     private readonly IPopupNavigation _popupNavigation;
-    private readonly INavigation _navigation;
 
+    private INavigation _navigation;
     private NavigationPage _rootNavigation;
 
     #endregion
@@ -44,7 +44,7 @@ public sealed class NavigationService : INavigationService
 
     #region INavigationService
 
-    public Page InitializeNavigation() 
+    public Page InitializeNavigation()
     {
         return _rootNavigation;
     }
@@ -134,11 +134,14 @@ public sealed class NavigationService : INavigationService
                 .Select(q => q.Split('='))
                 .ToDictionary(p => p[0], p => p[1]);
 
-            parameters = parameters
-                .Concat(urlParameters)
-                .ToDictionary(p => p.Key, p => p.Value);
+            if (urlParameters != null)
+            {
+                parameters = parameters
+                    .Concat(urlParameters)
+                    .ToDictionary(p => p.Key, p => p.Value);
+            }
 
-            await PushPageAsync(pagina, urlParameters, animated).ConfigureAwait(false);
+            await PushPageAsync(pagina, parameters, animated).ConfigureAwait(false);
         }
     }
 
@@ -158,6 +161,7 @@ public sealed class NavigationService : INavigationService
                             .FadeTo(0);
 
             Application.Current.MainPage = _rootNavigation = new NavigationPage(page);
+            _navigation = _rootNavigation.Navigation;
             _ = page.FadeTo(1);
             page.RaiseOnNavigatedTo(parameters);
         });

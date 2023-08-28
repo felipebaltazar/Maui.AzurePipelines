@@ -7,8 +7,11 @@ using PipelineApproval.Models;
 using System.Collections.ObjectModel;
 using System.Net.Http.Headers;
 using System.Net.Http.Json;
+using System.Security.Cryptography;
 using System.Text;
+using System.Text.Json;
 using System.Web;
+using static Android.Graphics.ImageDecoder;
 using Constants = PipelineApproval.Infrastructure.Constants;
 
 namespace PipelineApproval.Presentation.ViewModels.Pages;
@@ -203,17 +206,90 @@ public class MainPageViewModel : BaseViewModel, IInitializeAware
 
         using (var client = new HttpClient())
         {
-            client.BaseAddress = new Uri($"https://dev.azure.com/{selectedOrganization.accountName}/");
+            var baseUrl = $"https://dev.azure.com/{selectedOrganization.accountName}/";
+            client.BaseAddress = new Uri(baseUrl);
             client.DefaultRequestHeaders.Accept.Clear();
             client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
             client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Basic", credentials);
 
-            var response = await client.GetAsync($"_apis/projects?api-version=7.0");
+            var response = await client.GetAsync($"_apis/projects?api-version=7.0&getDefaultTeamImageUrl=true");
             response.EnsureSuccessStatusCode();
 
             var apiresponse = await response.Content.ReadFromJsonAsync<ProjectsResponseApi>();
+            var imagesTasks = apiresponse.value
+                .Select(p =>
+                {
+                    p.NavigateToProjectCommand =
+                            new AsyncCommand(() => ExecuteBusyActionOnNewTaskAsync(() => NavigateToProjectCommandExecuteAsync(p)));
 
-            Projects = apiresponse.value.ToList();
+                    async Task<(HttpResponseMessage, Project)> downloadImage()
+                    {
+                        try
+                        {
+                            var teste = p.defaultTeamImageUrl.Replace(baseUrl, string.Empty);
+                            var result = await client.GetAsync(p.defaultTeamImageUrl.Replace(baseUrl, string.Empty)).ConfigureAwait(false);
+                            return (result, p);
+                        }
+                        catch (Exception)
+                        {
+                        }
+
+                        return (null, p);
+                    }
+
+                    return downloadImage();
+                });
+
+            var httpResponses = await Task.WhenAll(imagesTasks).ConfigureAwait(false);
+            var filePaths = httpResponses.Select(SaveImageAsync);
+            var projects = await Task.WhenAll(filePaths).ConfigureAwait(false);
+
+            Projects = projects.ToList();
+        }
+    }
+
+    private async Task<Project> SaveImageAsync((HttpResponseMessage message, Project project) result)
+    {
+        if (result.message == null)
+            return result.project;
+
+        try
+        {
+            var hash = GenerateHash(result.project.defaultTeamImageUrl);
+            var cacheDir = Path.Combine(FileSystem.Current.CacheDirectory, "images");
+            var finalPath = Path.Combine(cacheDir, hash + ".png");
+
+            if (!Directory.Exists(cacheDir))
+                Directory.CreateDirectory(cacheDir);
+
+            if (!File.Exists(finalPath))
+            {
+                var apiResult = await result.message.Content.ReadFromJsonAsync<ImageApiResult>();
+                File.WriteAllBytes(finalPath, Convert.FromBase64String(apiResult.imageData));
+            }
+
+            result.project.TeamImageFile = finalPath;
+
+            return result.project;
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Não foi possivel baixar imagem");
+        }
+
+        return result.project;
+    }
+
+    public string GenerateHash(string text)
+    {
+        using (var sha = SHA256.Create())
+        {
+            var bytes = sha.ComputeHash(Encoding.UTF8.GetBytes(text));
+
+            var hexChars = bytes
+                .Select(b => b.ToString("X2"));
+
+            return string.Concat(hexChars);
         }
     }
 
@@ -276,6 +352,13 @@ public class MainPageViewModel : BaseViewModel, IInitializeAware
                                         $"Não foi possível aprovar pipeline, tente novamente.\nResponse:{responseText}");
             }
         }
+    }
+
+    private Task NavigateToProjectCommandExecuteAsync(Project project)
+    {
+        var objParameter = JsonSerializer.Serialize(project).ToNavigationParameters("Project");
+        objParameter.Add("Organization", SelectedOrganization.accountName);
+        return NavigationService.NavigateToAsync("/ProjectDetailsPage", objParameter);
     }
 
     private Task DisplayAlertAsync(string title, string message, string cancelButton = "Entendi!")

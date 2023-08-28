@@ -46,6 +46,8 @@ public static class MauiProgram
     private static void RegisterPages(MauiAppBuilder builder)
     {
         builder.Services.AddPageStartAndViewModel<LoginPage, LoginPageViewModel>();
+
+        builder.Services.AddPageAndViewModel<ProjectDetailsPage, ProjectDetailsPageViewModel>();
         builder.Services.AddPageAndViewModel<MainPage, MainPageViewModel>();
     }
 
