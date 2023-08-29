@@ -52,19 +52,11 @@
                                     Padding="16,0"
                                     Orientation="Horizontal"
                                     Spacing="16">
-                                    <Frame
-                                        Padding="4"
-                                        BackgroundColor="White"
-                                        BorderColor="White"
-                                        CornerRadius="16"
-                                        HeightRequest="32"
-                                        WidthRequest="32">
-                                        <Image Source="logo" />
-                                    </Frame>
 
                                     <Label
                                         FontAttributes="Bold"
                                         FontSize="20"
+                                        HorizontalOptions="CenterAndExpand"
                                         HorizontalTextAlignment="Center"
                                         Text="{x:Bind accountName}"
                                         TextColor="White"
