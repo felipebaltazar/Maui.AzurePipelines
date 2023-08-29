@@ -4,6 +4,7 @@
     xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
     xmlns:c="clr-namespace:PipelineApproval"
+    xmlns:f="clr-namespace:PipelineApproval.Presentation"
     xmlns:local="clr-namespace:PipelineApproval.Presentation.ViewModels.Pages"
     xmlns:m="clr-namespace:PipelineApproval.Models"
     xmlns:models="clr-namespace:PipelineApproval"
@@ -11,9 +12,9 @@
     BackgroundColor="#201f1e"
     NavigationPage.HasNavigationBar="False">
 
-    <Grid RowDefinitions="80, 80, 105,*">
+    <Grid RowDefinitions="80, 60, 80, 105,*">
         <Frame
-            Margin="16"
+            Margin="60"
             Padding="8"
             BackgroundColor="#424242"
             BorderColor="#424242"
@@ -23,29 +24,21 @@
                 Padding="16,0"
                 Orientation="Horizontal"
                 Spacing="16">
-                <Frame
-                    Padding="4"
-                    BackgroundColor="White"
-                    BorderColor="White"
-                    CornerRadius="16"
-                    HeightRequest="32"
-                    WidthRequest="32">
-                    <Image Source="logo" />
-                </Frame>
 
                 <Label
                     FontAttributes="Bold"
                     FontSize="20"
-                    HorizontalTextAlignment="Center"
+                    HorizontalOptions="CenterAndExpand"
                     Text="{Binding SelectedOrganization.accountName}"
                     TextColor="White"
                     VerticalTextAlignment="Center" />
 
                 <Label
-                    FontFamily="DevOpsIcons"
-                    FontSize="20"
-                    HorizontalOptions="EndAndExpand"
-                    Text="{x:Static c:Icons.Edit}"
+                    Margin="0,6,0,0"
+                    FontFamily="FontAwesomeSolid"
+                    FontSize="18"
+                    HorizontalOptions="Center"
+                    Text="{x:Static f:FontAwesome.ChevronDown}"
                     TextColor="White"
                     VerticalTextAlignment="Center" />
             </StackLayout>
@@ -54,8 +47,23 @@
             </Frame.GestureRecognizers>
         </Frame>
 
-        <CollectionView
+        <Label
             Grid.Row="1"
+            Margin="16,0,0,0"
+            FontAttributes="Bold"
+            FontSize="20"
+            TextColor="White"
+            VerticalTextAlignment="Center">
+            <Label.FormattedText>
+                <FormattedString>
+                    <Span FontFamily="DevOpsIcons" Text="{x:Static c:Icons.List}" />
+                    <Span FontFamily="OpenSansSemibold" Text=" Projects" />
+                </FormattedString>
+            </Label.FormattedText>
+        </Label>
+
+        <CollectionView
+            Grid.Row="2"
             Margin="16,0,0,0"
             ItemsSource="{x:Bind Projects, IsItemsSource=True}">
             <CollectionView.ItemsLayout>
@@ -138,7 +146,7 @@
         </CollectionView>
 
         <StackLayout
-            Grid.Row="2"
+            Grid.Row="3"
             Padding="16,0"
             Orientation="Horizontal"
             Spacing="15">
@@ -163,7 +171,7 @@
                 VerticalOptions="Center" />
         </StackLayout>
 
-        <CollectionView Grid.Row="3" ItemsSource="{x:Bind Approvals, IsItemsSource=True}">
+        <CollectionView Grid.Row="4" ItemsSource="{x:Bind Approvals, IsItemsSource=True}">
             <CollectionView.ItemTemplate>
                 <DataTemplate>
                     <Frame
@@ -319,21 +327,5 @@
                 </DataTemplate>
             </CollectionView.EmptyViewTemplate>
         </CollectionView>
-
-        <StackLayout
-            Grid.RowSpan="2"
-            BackgroundColor="#CCffffff"
-            IsVisible="{Binding IsBusy}">
-            <ActivityIndicator
-                IsEnabled="True"
-                IsRunning="True"
-                VerticalOptions="CenterAndExpand"
-                Color="Blue" />
-            <StackLayout.GestureRecognizers>
-                <TapGestureRecognizer />
-            </StackLayout.GestureRecognizers>
-        </StackLayout>
     </Grid>
-
-
 </ContentPage>
