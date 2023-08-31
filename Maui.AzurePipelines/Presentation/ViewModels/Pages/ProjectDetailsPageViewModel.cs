@@ -1,30 +1,29 @@
-﻿using Android.Widget;
-using Java.Util;
-using Microsoft.Extensions.Logging;
+﻿using Microsoft.Extensions.Logging;
 using PipelineApproval.Abstractions;
-using PipelineApproval.Infrastructure;
 using PipelineApproval.Infrastructure.Commands;
 using PipelineApproval.Infrastructure.Extensions;
 using PipelineApproval.Models;
-using System.Net.Http.Headers;
-using System.Net.Http.Json;
-using System.Text;
-using Uri = System.Uri;
 
 namespace PipelineApproval.Presentation.ViewModels.Pages;
 
 public class ProjectDetailsPageViewModel : BaseViewModel, INavigationAware
 {
+    #region Fields
+
+    private readonly IAzureService _azureService;
+
     private List<BuildOverview> originalList = new List<BuildOverview>();
     private ObservableRangeCollection<BuildOverview> pipelines;
     private TaskQueue taskQueue = new TaskQueue();
 
-    private string continuationToken;
     private string company;
-    private string credentials;
     private string project;
     private string searchText;
     private bool isLoading;
+
+    #endregion
+
+    #region Properties
 
     public ObservableRangeCollection<BuildOverview> Pipelines
     {
@@ -38,17 +37,21 @@ public class ProjectDetailsPageViewModel : BaseViewModel, INavigationAware
         set => SetProperty(ref searchText, value, OnSearchChanged);
     }
 
-    public bool IsLoading 
+    public bool IsLoading
     {
         get => isLoading;
         set => SetProperty(ref isLoading, value);
     }
 
-    //TODO: Verificar paginação
     public IAsyncCommand LoadMoreDataCommand =>
         new AsyncCommand(() => Task.Run(LoadPipelinesAsync), (a) => !IsLoading);
 
+    #endregion
+
+    #region Constructors
+
     public ProjectDetailsPageViewModel(
+        IAzureService azureService,
         ILazyDependency<ILoaderService> loaderService,
         ILazyDependency<INavigationService> navigationService,
         IMainThreadService mainThreadService,
@@ -59,10 +62,21 @@ public class ProjectDetailsPageViewModel : BaseViewModel, INavigationAware
             mainThreadService,
             logger)
     {
+        _azureService = azureService;
     }
+
+    #endregion
+
+    #region INavigationAware
 
     public Task OnNavigatedFrom(IDictionary<string, string> parameters)
     {
+        _azureService.ClearCache();
+
+        pipelines.Clear();
+        originalList.Clear();
+        SearchText = string.Empty;
+
         return Task.CompletedTask;
     }
 
@@ -72,11 +86,13 @@ public class ProjectDetailsPageViewModel : BaseViewModel, INavigationAware
         if (!parameters.TryGetValue("Organization", out company))
             return;
 
-        var pat = await SecureStorage.GetAsync(Constants.Storage.PAT_TOKEN_KEY);
-        credentials = Convert.ToBase64String(Encoding.ASCII.GetBytes(string.Format("{0}:{1}", "", pat)));
         project = currentProject.name;
         await ExecuteBusyActionAsync(LoadPipelinesAsync).ConfigureAwait(false);
     }
+
+    #endregion
+
+    #region Private Methods
 
     private async Task LoadPipelinesAsync()
     {
@@ -87,45 +103,23 @@ public class ProjectDetailsPageViewModel : BaseViewModel, INavigationAware
             if (!string.IsNullOrWhiteSpace(SearchText))
                 return;
 
-            using (var client = new HttpClient())
+            var result = await _azureService.GetBuildsAsync(company, project).ConfigureAwait(false);
+            var lastProject = result.value.LastOrDefault();
+
+            if (Pipelines == null)
             {
-                client.BaseAddress = new Uri($"https://dev.azure.com/{company}/{project}/");
-                client.DefaultRequestHeaders.Accept.Clear();
-                client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-                client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Basic", credentials);
-
-                var continationQuery = !string.IsNullOrEmpty(continuationToken) ? $"&continuationToken={continuationToken}" : string.Empty;
-                var response = await client.GetAsync("_apis/build/builds?api-version=7.0&$top=100&queryOrder=queueTimeDescending" + continationQuery);
-                if (response.Headers.TryGetValues("x-ms-continuationtoken", out var values))
-                {
-                    continuationToken = values.FirstOrDefault();
-                }
-
-                if (response.IsSuccessStatusCode)
-                {
-                    try
-                    {
-                        var result = await response.Content.ReadFromJsonAsync<AzureApiResult<BuildOverview>>().ConfigureAwait(false);
-                        var lastProject = result.value.LastOrDefault();
-
-                        if (Pipelines == null)
-                        {
-                            originalList = new List<BuildOverview>(result.value);
-                            Pipelines = new ObservableRangeCollection<BuildOverview>(result.value);
-                        }
-                        else
-                        {
-                            originalList.AddRange(Pipelines);
-                            Pipelines.AddRange(result.value);
-                        }
-                    }
-                    catch (Exception ex)
-                    {
-                        var teste = ex;
-                    }
-
-                }
+                originalList = new List<BuildOverview>(result.value);
+                Pipelines = new ObservableRangeCollection<BuildOverview>(result.value);
             }
+            else
+            {
+                originalList.AddRange(Pipelines);
+                Pipelines.AddRange(result.value);
+            }
+        }
+        catch (Exception ex)
+        {
+            var teste = ex;
         }
         finally
         {
@@ -160,4 +154,6 @@ public class ProjectDetailsPageViewModel : BaseViewModel, INavigationAware
         }, true);
 
     }
+
+    #endregion
 }

@@ -27,5 +27,9 @@ public static class Constants
         public const string PAT_DOCUMENTATION = "https://learn.microsoft.com/pt-br/azure/devops/organizations/accounts/use-personal-access-tokens-to-authenticate?view=azure-devops";
 
         public const string GITHUB_REPOSIOTRY = "https://github.com/felipebaltazar/Maui.AzurePipelines";
+
+        public const string VISUALSTUDIO_API = "https://app.vssps.visualstudio.com";
+
+        public const string AZURE_API = "https://dev.azure.com";
     }
 }

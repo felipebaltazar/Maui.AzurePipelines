@@ -31,38 +31,44 @@ public static class MauiProgram
 #if DEBUG
         builder.Logging.AddDebug();
 #endif
-        RegisterServices(builder);
-        RegisterPages(builder);
-        RegisterPopups(builder);
+        var serviceCollection = builder.Services;
+
+        RegisterServices(serviceCollection);
+        RegisterPages(serviceCollection);
+        RegisterPopups(serviceCollection);
 
         return builder.Build();
     }
 
-    private static void RegisterPopups(MauiAppBuilder builder)
+    private static void RegisterPopups(IServiceCollection sCollection)
     {
-        builder.Services.AddScoped<IAlertPopup, AlertPopup>();
-        builder.Services.AddScoped<ISelectOrganizationPopup, SelectOrganizationPopup>();
+        sCollection.AddScoped<IAlertPopup, AlertPopup>();
+        sCollection.AddScoped<ISelectOrganizationPopup, SelectOrganizationPopup>();
     }
 
-    private static void RegisterPages(MauiAppBuilder builder)
+    private static void RegisterPages(IServiceCollection sCollection)
     {
-        builder.Services.AddPageStartAndViewModel<LoginPage, LoginPageViewModel>();
+        sCollection.AddPageStartAndViewModel<LoginPage, LoginPageViewModel>();
 
-        builder.Services.AddPageAndViewModel<ProjectDetailsPage, ProjectDetailsPageViewModel>();
-        builder.Services.AddPageAndViewModel<MainPage, MainPageViewModel>();
+        sCollection.AddPageAndViewModel<ProjectDetailsPage, ProjectDetailsPageViewModel>();
+        sCollection.AddPageAndViewModel<MainPage, MainPageViewModel>();
     }
 
-    private static void RegisterServices(MauiAppBuilder builder)
+    private static void RegisterServices(IServiceCollection sCollection)
     {
-        builder.Services.AddSingleton(MopupService.Instance);
-        builder.Services.AddSingleton<IBrowserService, BrowserService>();
-        builder.Services.AddSingleton<ILogger, AppCenterLoggerService>();
-        builder.Services.AddSingleton<IMainThreadService, MainThreadService>();
+        sCollection.AddSingleton(MopupService.Instance);
+        sCollection.AddSingleton<IBrowserService, BrowserService>();
+        sCollection.AddSingleton<ILogger, AppCenterLoggerService>();
+        sCollection.AddSingleton<IMainThreadService, MainThreadService>();
+        sCollection.AddSingleton<IPreferencesService, PreferencesService>();
+        sCollection.AddSingleton<ISecureStorageService, SecureStorageService>();
 
-        builder.Services.AddSingleton<INavigationService, NavigationService>();
-        builder.Services.AddSingleton<ILazyDependency<INavigationService>, LazyDependency<INavigationService>>();
+        sCollection.AddSingleton<INavigationService, NavigationService>();
+        sCollection.AddSingleton<ILazyDependency<INavigationService>, LazyDependency<INavigationService>>();
 
-        builder.Services.AddSingleton<ILoaderService, LoaderService>();
-        builder.Services.AddSingleton<ILazyDependency<ILoaderService>, LazyDependency<ILoaderService>>();
+        sCollection.AddSingleton<ILoaderService, LoaderService>();
+        sCollection.AddSingleton<ILazyDependency<ILoaderService>, LazyDependency<ILoaderService>>();
+
+        sCollection.AddAzureApiService();
     }
 }

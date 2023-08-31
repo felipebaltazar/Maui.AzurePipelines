@@ -4,10 +4,6 @@ using PipelineApproval.Abstractions.Views;
 using PipelineApproval.Infrastructure;
 using PipelineApproval.Infrastructure.Commands;
 using PipelineApproval.Infrastructure.Extensions;
-using PipelineApproval.Models;
-using System.Net.Http.Headers;
-using System.Net.Http.Json;
-using System.Text;
 
 namespace PipelineApproval.Presentation.ViewModels.Pages;
 
@@ -15,9 +11,13 @@ public class LoginPageViewModel : BaseViewModel, INavigationAware
 {
     #region Fields
 
+    private readonly ISecureStorageService _secureStorageService;
+    private readonly IVisualStudioService _visualStudioService;
+    private readonly IPreferencesService _preferencesService;
     private readonly IBrowserService _browserService;
-    private string pat;
+
     private bool isReady;
+    private string pat;
 
     #endregion
 
@@ -50,16 +50,22 @@ public class LoginPageViewModel : BaseViewModel, INavigationAware
 
     public LoginPageViewModel(
        IBrowserService browserService,
+       IPreferencesService preferencesService,
+       IVisualStudioService visualStudioService,
+       ISecureStorageService secureStorageService,
        ILazyDependency<ILoaderService> loaderService,
        ILazyDependency<INavigationService> navigationService,
        IMainThreadService mainThreadService,
        ILogger logger)
-   : base(
+        : base(
          loaderService,
          navigationService,
          mainThreadService,
          logger)
     {
+        _secureStorageService = secureStorageService;
+        _visualStudioService = visualStudioService;
+        _preferencesService = preferencesService;
         _browserService = browserService;
     }
 
@@ -73,14 +79,14 @@ public class LoginPageViewModel : BaseViewModel, INavigationAware
         {
             try
             {
-                var pat = await SecureStorage.GetAsync(Constants.Storage.PAT_TOKEN_KEY).ConfigureAwait(false);
+                var pat = await _secureStorageService.GetAsync(Constants.Storage.PAT_TOKEN_KEY).ConfigureAwait(false);
                 if (string.IsNullOrWhiteSpace(pat))
                 {
                     IsReady = true;
                     return;
                 }
 
-                var organizationsStr = Preferences.Get(Constants.Storage.USER_ORGANIZATIONS, string.Empty);
+                var organizationsStr = _preferencesService.Get(Constants.Storage.USER_ORGANIZATIONS, string.Empty);
                 if (string.IsNullOrWhiteSpace(organizationsStr))
                 {
                     IsReady = true;
@@ -92,7 +98,10 @@ public class LoginPageViewModel : BaseViewModel, INavigationAware
             }
             finally
             {
-                IsReady = true;
+                MainThreadService.BeginInvokeOnMainThread(() =>
+                {
+                    IsReady = true;
+                });
             }
         });
     }
@@ -112,31 +121,16 @@ public class LoginPageViewModel : BaseViewModel, INavigationAware
 
         try
         {
-            var credentials = Convert.ToBase64String(Encoding.ASCII.GetBytes(string.Format("{0}:{1}", "", PAT)));
-            using (var client = new HttpClient())
+            var isValid = await _visualStudioService.ValidateAccessTokenAsync(PAT).ConfigureAwait(false);
+            if (isValid)
             {
-                client.BaseAddress = new Uri($"https://app.vssps.visualstudio.com/");
-                client.DefaultRequestHeaders.Accept.Clear();
-                client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-                client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Basic", credentials);
+                var apiResponse = await _visualStudioService.GetOrganizationsAsync().ConfigureAwait(false);
+                var navParameters = apiResponse.ToNavigationParameters(Constants.Navigation.ACCOUNT_PARAMETER);
 
-                var response = await client.GetAsync("_apis/profile/profiles/me?api-version=5.1").ConfigureAwait(false);
+                _preferencesService.Set(Constants.Storage.USER_ORGANIZATIONS, navParameters[Constants.Navigation.ACCOUNT_PARAMETER]);
+                await NavigationService.NavigateToAsync("MainPage", navParameters).ConfigureAwait(false);
 
-                if (response.IsSuccessStatusCode)
-                {
-                    var accountInfo = await response.Content.ReadFromJsonAsync<AccountInfo>().ConfigureAwait(false);
-                    var id = accountInfo.id;
-
-                    response = await client.GetAsync($"_apis/accounts?api-version=5.1&memberId={id}").ConfigureAwait(false);
-
-                    var apiResponse = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
-                    await SecureStorage.SetAsync(Constants.Storage.PAT_TOKEN_KEY, PAT).ConfigureAwait(false);
-                    Preferences.Set(Constants.Storage.USER_ORGANIZATIONS, apiResponse);
-
-                    var navParameters = apiResponse.ToNavigationParameters(Constants.Navigation.ACCOUNT_PARAMETER);
-                    await NavigationService.NavigateToAsync("MainPage", navParameters).ConfigureAwait(false);
-                    return;
-                }
+                return;
             }
         }
         catch (Exception ex)
@@ -147,7 +141,7 @@ public class LoginPageViewModel : BaseViewModel, INavigationAware
         await NavigationService.PushPopupAsync<IAlertPopup>(p =>
         {
             p.MessageTitle = "Erro de autenticação";
-            p.Message = "Não foi possivel autenticar, verifique se o 'Personal Access Token' é valido.";
+            p.Message = "Não foi possível autenticar, verifique se o 'Personal Access Token' é valido.";
             p.CancelButton = "Ok";
         }).ConfigureAwait(false);
 
