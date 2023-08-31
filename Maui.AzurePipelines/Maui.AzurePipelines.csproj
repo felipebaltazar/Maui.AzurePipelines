@@ -52,7 +52,6 @@
     <AndroidResource Include="Platforms\Android\mipmap*\**" />
     <None Remove="Resources\Fonts\FontAwesomeSolid.otf" />
     <None Remove="Resources\Images\eye_regular.svg" />
-    <Folder Include="Data\" />
 
   </ItemGroup>
 
