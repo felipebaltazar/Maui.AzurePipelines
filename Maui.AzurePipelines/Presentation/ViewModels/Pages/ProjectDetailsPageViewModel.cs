@@ -3,6 +3,8 @@ using PipelineApproval.Abstractions;
 using PipelineApproval.Infrastructure.Commands;
 using PipelineApproval.Infrastructure.Extensions;
 using PipelineApproval.Models;
+using System.Text.Json;
+using System.Windows.Input;
 
 namespace PipelineApproval.Presentation.ViewModels.Pages;
 
@@ -46,6 +48,9 @@ public class ProjectDetailsPageViewModel : BaseViewModel, INavigationAware
     public IAsyncCommand LoadMoreDataCommand =>
         new AsyncCommand(() => Task.Run(LoadPipelinesAsync), (a) => !IsLoading);
 
+    public IAsyncCommand<BuildOverview> PipelineSelectedCommand =>
+        new AsyncCommand<BuildOverview>((b) => Task.Run(() => NavigateToPipelineDetailsAsync(b)), (a) => !IsLoading);
+
     #endregion
 
     #region Constructors
@@ -71,11 +76,14 @@ public class ProjectDetailsPageViewModel : BaseViewModel, INavigationAware
 
     public Task OnNavigatedFrom(IDictionary<string, string> parameters)
     {
-        _azureService.ClearCache();
+        if (parameters.ContainsKey("NavigationMode"))
+        {
+            _azureService.ClearCache();
 
-        pipelines.Clear();
-        originalList.Clear();
-        SearchText = string.Empty;
+            pipelines.Clear();
+            originalList.Clear();
+            SearchText = string.Empty;
+        }
 
         return Task.CompletedTask;
     }
@@ -153,6 +161,15 @@ public class ProjectDetailsPageViewModel : BaseViewModel, INavigationAware
             });
         }, true);
 
+    }
+
+    private async Task NavigateToPipelineDetailsAsync(BuildOverview selected)
+    {
+        var objParameter = selected.ToNavigationParameters("BuildOverview");
+        objParameter.Add("Organization", company);
+        objParameter.Add("Project", project);
+
+        await NavigationService.NavigateToAsync("/PipelineDetailsPage", objParameter);
     }
 
     #endregion

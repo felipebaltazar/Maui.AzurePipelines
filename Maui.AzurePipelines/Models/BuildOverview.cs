@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Input;
 
 namespace PipelineApproval.Models;
-
 
 public class BuildOverview
 {
@@ -43,7 +43,6 @@ public class BuildOverview
     public string queueOptions { get; set; }
     public Dictionary<string, string> templateParameters { get; set; }
     public string parameters { get; set; }
-
 
     public string GetStateIcon()
     {

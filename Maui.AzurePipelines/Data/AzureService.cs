@@ -1,10 +1,6 @@
-﻿using Android.Net;
-using Android.Webkit;
-using PipelineApproval.Abstractions;
+﻿using PipelineApproval.Abstractions;
 using PipelineApproval.Abstractions.Data;
-using PipelineApproval.Infrastructure;
 using PipelineApproval.Models;
-using System.Text;
 
 namespace PipelineApproval;
 
@@ -33,6 +29,22 @@ public sealed class AzureService : BaseMicrosoftService, IAzureService
     public void ClearCache()
     {
         _continuationTokens?.Clear();
+    }
+
+    public async Task<BuildOverview> GetBuildAsync(
+        string organization,
+        string project,
+        string buildId)
+    {
+        var credentials = await GetCredentialsAsync().ConfigureAwait(false);
+        var result = await RequestWithRetryPolicy(() =>
+            _azureApi.GetBuildAsync(
+                credentials,
+                organization,
+                project,
+                buildId)).ConfigureAwait(false);
+
+        return result;
     }
 
     public async Task<AzureApiResult<BuildOverview>> GetBuildsAsync(
@@ -64,6 +76,21 @@ public sealed class AzureService : BaseMicrosoftService, IAzureService
         }
 
         return result.Content;
+    }
+
+    public async Task<(IEnumerable<Approval> Approvals, IEnumerable<Record> Records)> GetBuildTimeLineAsync(
+        string organization,
+        string project,
+        int id)
+    {
+        var credentials = await GetCredentialsAsync().ConfigureAwait(false);
+        var timeline = await _azureApi.GetBuildTimeLineAsync(credentials, organization, project, id.ToString()).ConfigureAwait(false);
+        var tasks = timeline.records.Where(r => r.type == "Checkpoint.Approval")
+                                    .Select(r => _azureApi.GetApprovalAsync(credentials, organization, project, r.id));
+
+        var approvals = await Task.WhenAll(tasks).ConfigureAwait(false);
+
+        return (approvals, timeline.records);
     }
 
     #endregion

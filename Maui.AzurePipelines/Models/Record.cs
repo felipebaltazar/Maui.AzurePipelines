@@ -28,4 +28,65 @@ public class Record
     public string identifier { get; set; }
     public int queueId { get; set; }
     public Issue[] issues { get; set; }
+    public Approval Approval { get; set; }
+
+
+    public Thickness GetMargin()
+    {
+        if (type == "Stage")
+        {
+            return Thickness.Zero;
+        }
+        else if(type == "Job" || type == "Checkpoint.Approval")
+        {
+
+            return new Thickness(16, 0, 0, 0);
+        }
+
+        return new Thickness(32, 0, 0, 0);
+    }
+
+    public string GetStateIcon()
+    {
+        if (state == "inProgress")
+        {
+            return Icons.Running;
+        }
+        else if (state == "notStarted" || state == "pending")
+        {
+            return Icons.Queued;
+        }
+        else if (state == "cancelling" || state == "cancelled")
+        {
+            return Icons.Cancelled;
+        }
+        else if (state == "completed")
+        {
+            return Icons.Success;
+        }
+
+        return Icons.Failed;
+    }
+
+    public Color GetStateColor()
+    {
+        if (state == "inProgress")
+        {
+            return Color.FromArgb("#0078d4");
+        }
+        else if (state == "notStarted" || state == "pending")
+        {
+            return Colors.White;
+        }
+        else if (state == "cancelling" || state == "cancelled")
+        {
+            return Color.FromArgb("#cd4a45");
+        }
+        else if (state == "completed")
+        {
+            return Color.FromArgb("#55a362");
+        }
+
+        return Color.FromArgb("#cd4a45");
+    }
 }

@@ -1,10 +1,11 @@
+
 using PipelineApproval.Infrastructure.Extensions;
 
 namespace PipelineApproval.Presentation.Views.Pages;
 
-public partial class ProjectDetailsPage : ContentPage
+public partial class PipelineDetailsPage : ContentPage
 {
-	public ProjectDetailsPage()
+	public PipelineDetailsPage()
 	{
 		InitializeComponent();
 	}

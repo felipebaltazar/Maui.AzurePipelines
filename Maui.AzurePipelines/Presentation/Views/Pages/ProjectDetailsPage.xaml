@@ -8,6 +8,7 @@
     xmlns:local="clr-namespace:PipelineApproval.Presentation.ViewModels.Pages"
     xmlns:m="clr-namespace:PipelineApproval.Models"
     xmlns:models="clr-namespace:PipelineApproval"
+    x:Name="detailsPage"
     x:DataType="local:ProjectDetailsPageViewModel"
     BackgroundColor="#201f1e"
     NavigationPage.HasNavigationBar="False">
@@ -86,9 +87,10 @@
                                     </FormattedString>
                                 </Label.FormattedText>
                             </Label>
-
-
                         </Grid>
+                        <Frame.GestureRecognizers>
+                            <TapGestureRecognizer Command="{Binding BindingContext.PipelineSelectedCommand, Mode=OneWay, Source={Reference detailsPage}}" CommandParameter="{Binding .}" />
+                        </Frame.GestureRecognizers>
                     </Frame>
                 </DataTemplate>
             </CollectionView.ItemTemplate>
