@@ -14,4 +14,14 @@ public static class DictionaryExtensions
 
         return defaultValue;
     }
+
+    public static string GetValueOrDefault(this IDictionary<string, string> dictionary, string key, string defaultValue = null)
+    {
+        if (dictionary.TryGetValue(key, out var resultStr))
+        {
+            return resultStr;
+        }
+
+        return defaultValue;
+    }
 }

@@ -5,19 +5,21 @@ using PipelineApproval.Infrastructure.Commands;
 using PipelineApproval.Infrastructure.Extensions;
 using PipelineApproval.Models;
 using System.Collections.ObjectModel;
+using System.Data.Common;
 using System.Net.Http.Headers;
 using System.Net.Http.Json;
 using System.Security.Cryptography;
 using System.Text;
 using System.Text.Json;
 using System.Web;
-using static Android.Graphics.ImageDecoder;
 using Constants = PipelineApproval.Infrastructure.Constants;
 
 namespace PipelineApproval.Presentation.ViewModels.Pages;
 
 public class MainPageViewModel : BaseViewModel, IInitializeAware
 {
+    private readonly IAzureService _azureService;
+
     private string _pat;
     private string _url;
 
@@ -68,6 +70,7 @@ public class MainPageViewModel : BaseViewModel, IInitializeAware
         ILazyDependency<ILoaderService> loaderService,
         ILazyDependency<INavigationService> navigationService,
         IMainThreadService mainThreadService,
+        IAzureService azureService,
         ILogger logger)
         : base(
             loaderService,
@@ -75,6 +78,7 @@ public class MainPageViewModel : BaseViewModel, IInitializeAware
             mainThreadService,
             logger)
     {
+        _azureService = azureService;
     }
 
     public async Task InitializeAsync(IDictionary<string, string> parameters)
@@ -103,7 +107,7 @@ public class MainPageViewModel : BaseViewModel, IInitializeAware
     {
         if (string.IsNullOrWhiteSpace(Url) || string.IsNullOrWhiteSpace(PAT))
         {
-            await DisplayAlertAsync("Erro", "Você precisa preencher os campos 'URL da pipe' e 'Personal AccessToken'!");
+            await DisplayAlertAsync("Erro", "Você precisa preencher o campo 'URL da pipe'");
             return;
         }
 
@@ -135,57 +139,14 @@ public class MainPageViewModel : BaseViewModel, IInitializeAware
             }
 
             buildId = HttpUtility.ParseQueryString(uri.Query).Get("buildId");
-            var credentials = Convert.ToBase64String(ASCIIEncoding.ASCII.GetBytes(string.Format("{0}:{1}", "", PAT)));
+            
+            var overview = await _azureService.GetBuildAsync(company, project, buildId).ConfigureAwait(false);
+            var parameters =  overview.ToNavigationParameters("BuildOverview");
 
-            using (var client = new HttpClient())
-            {
-                client.BaseAddress = new Uri($"https://dev.azure.com/{company}/{project}/");
-                client.DefaultRequestHeaders.Accept.Clear();
-                client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-                client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Basic", credentials);
+            parameters.Add("Project", project);
+            parameters.Add("Organization", company);
 
-                var response = await client.GetAsync($"_apis/build/builds/{buildId}/timeline?api-version=6.0");
-                response.EnsureSuccessStatusCode();
-
-                var apiresponse = await response.Content.ReadFromJsonAsync<BuildIdReponse>();
-                var recordTasks = new List<Task<(HttpResponseMessage, Record)>>();
-
-                foreach (var record in apiresponse.records)
-                {
-                    if (record.type == "Checkpoint.Approval")
-                    {
-                        var checkpointRecord = apiresponse.records.FirstOrDefault(r => r.id == record.parentId);
-                        var stageRecord = apiresponse.records.FirstOrDefault(r => r.id == checkpointRecord.parentId);
-                        async Task<(HttpResponseMessage, Record)> getApprovalAsync()
-                        {
-                            var result = await client.GetAsync($"_apis/pipelines/approvals/{record.id}?$expand=steps&$expand=permissions&api-version=7.0-preview.1").ConfigureAwait(false);
-                            return (result, stageRecord);
-                        }
-
-                        recordTasks.Add(getApprovalAsync());
-                    }
-                }
-
-                var recordTasksResult = await Task.WhenAll(recordTasks).ConfigureAwait(false);
-
-                var readTasks = recordTasksResult
-                    .Where(t => t.Item1.IsSuccessStatusCode)
-                    .Select(t =>
-                    {
-                        async Task<Approval> extractApproval()
-                        {
-                            var approval = await t.Item1.Content.ReadFromJsonAsync<Approval>();
-                            approval.ApproveCommand = new AsyncCommand<Approval>(ApproveCommandExecuteAsync);
-                            approval.stageRecord = t.Item2;
-                            return approval;
-                        }
-
-                        return extractApproval();
-                    });
-
-                var approvals = await Task.WhenAll(readTasks).ConfigureAwait(false);
-                Approvals = approvals.ToList();
-            }
+            await NavigationService.NavigateToAsync("/PipelineDetailsPage", parameters);
         }
         catch (Exception ex)
         {

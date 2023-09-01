@@ -15,4 +15,28 @@ public interface IAzureApi
         int top = 100,
         string queryOrder = "queueTimeDescending",
         string apiVersion = "7.0");
+
+    [Get("/{organization}/{project}/_apis/build/builds/{buildId}?api-version={apiVersion}")]
+    Task<BuildOverview> GetBuildAsync(
+        [Header("Authorization")] string authentication,
+        string organization,
+        string project,
+        string buildId,
+        string apiVersion = "7.0");
+
+    [Get("/{organization}/{project}/_apis/build/builds/{buildId}/timeline?api-version={apiVersion}")]
+    Task<BuildIdReponse> GetBuildTimeLineAsync(
+        [Header("Authorization")] string authentication,
+        string organization,
+        string project,
+        string buildId,
+        string apiVersion = "6.0");
+
+    [Get("/{organization}/{project}/_apis/pipelines/approvals/{recordId}?$expand=steps&$expand=permissions&api-version=7.0-preview.1")]
+    Task<Approval> GetApprovalAsync(
+        [Header("Authorization")] string authentication,
+        string organization,
+        string project,
+        string recordId,
+        string apiVersion = "6.0");
 }

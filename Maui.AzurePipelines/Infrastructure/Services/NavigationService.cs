@@ -204,7 +204,8 @@ public sealed class NavigationService : INavigationService
         foreach (var parameter in parameters)
         {
             var property = vmType.GetProperty(parameter.Key);
-            property?.SetValue(page.BindingContext, parameter.Value);
+            if(property?.PropertyType == parameter.Value.GetType())
+                property?.SetValue(page.BindingContext, parameter.Value);
         }
     }
 

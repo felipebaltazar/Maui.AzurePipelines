@@ -50,6 +50,7 @@ public static class MauiProgram
     {
         sCollection.AddPageStartAndViewModel<LoginPage, LoginPageViewModel>();
 
+        sCollection.AddPageAndViewModel<PipelineDetailsPage, PipelineDetailsPageViewModel>();
         sCollection.AddPageAndViewModel<ProjectDetailsPage, ProjectDetailsPageViewModel>();
         sCollection.AddPageAndViewModel<MainPage, MainPageViewModel>();
     }
