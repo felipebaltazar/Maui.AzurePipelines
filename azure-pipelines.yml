@@ -1,22 +1,66 @@
-# Starter pipeline
-# Start with a minimal pipeline that you can customize to build and deploy your code.
-# Add steps that build, run tests, deploy, and more:
-# https://aka.ms/yaml
-
 trigger:
 - main
 
-pool:
-  vmImage: windows-latest
 
-steps:
+jobs:
 
-- task: UseDotNet@2
-  inputs:
-    packageType: 'sdk'
-    version: '8.x.x'
+  #Build Android
+  - job: Job_Android
+    displayName: Build Android
+    pool:
+      vmimage: 'windows-latest'
+    steps:
 
-- task: DotNetCoreCLI@2
-  inputs:
-    command: 'build'
-    projects: '**/*csproj'
+    - task: UseDotNet@2
+      inputs:
+        packageType: 'sdk'
+        version: '7.x.x'
+
+
+    - task: Bash@3
+      displayName: Install MAUI
+      inputs:
+        targetType: 'inline'
+        script: |
+          dotnet nuget locals all --clear 
+          cd "Maui.AzurePipelines/"
+          dotnet workload install maui-android
+
+    - task: Bash@3
+      displayName: Build Android App
+      inputs:
+        targetType: 'inline'
+        script: |
+          cd "Maui.AzurePipelines/"
+          dotnet publish FiveHigh.Events.csproj -f net7.0-android -c Release
+
+
+  #Build IOS
+  - job: Job_iOS
+    displayName: Build iOS
+    dependsOn: []
+    pool:
+      vmimage: 'macOS-latest'
+    steps:
+
+    - task: UseDotNet@2
+      inputs:
+        packageType: 'sdk'
+        version: '7.x.x'
+
+    - task: Bash@3
+      displayName: Install MAUI
+      inputs:
+        targetType: 'inline'
+        script: |
+          dotnet nuget locals all --clear 
+          cd "Maui.AzurePipelines/"
+          dotnet workload install maui-ios
+
+    - task: Bash@3
+      displayName: Build IOS App
+      inputs:
+        targetType: 'inline'
+        script: |
+          cd "Maui.AzurePipelines/"
+          dotnet publish Maui.AzurePipelines.csproj -f net7.0-ios -c Release
