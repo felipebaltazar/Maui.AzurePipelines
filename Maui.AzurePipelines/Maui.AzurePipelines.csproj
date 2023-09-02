@@ -50,10 +50,9 @@
 	  <AndroidResource Include="Platforms\Android\drawable\**" />
     <AndroidResource Include="Platforms\Android\layout\**" />
     <AndroidResource Include="Platforms\Android\mipmap*\**" />
-    <None Remove="Resources\Fonts\FontAwesomeSolid.otf" />
-    <None Remove="Resources\Images\eye_regular.svg" />
-
+    <AndroidEnvironment Include="Platforms\Android\GarbageCollector.config" />
   </ItemGroup>
+  
 
   <!-- Packages -->
 	<ItemGroup>
@@ -64,16 +63,7 @@
 		<PackageReference Include="Refit" Version="7.0.0" />
 	</ItemGroup>
 	<ItemGroup>
-	  <MauiXaml Update="Presentation\Views\Controls\SelectOrganizationPopup.xaml">
-	    <Generator>MSBuild:Compile</Generator>
-	  </MauiXaml>
-	  <MauiXaml Update="Presentation\Views\Pages\LoginPage.xaml">
-	    <Generator>MSBuild:Compile</Generator>
-	  </MauiXaml>
-	  <MauiXaml Update="Presentation\Views\Pages\PipelineDetailsPage.xaml">
-	    <Generator>MSBuild:Compile</Generator>
-	  </MauiXaml>
-	  <MauiXaml Update="Presentation\Views\Pages\ProjectDetailsPage.xaml">
+	  <MauiXaml Update="Presentation\Views\Pages\TaskLogPage.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
 	</ItemGroup>

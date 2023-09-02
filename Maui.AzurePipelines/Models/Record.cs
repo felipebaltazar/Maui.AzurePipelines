@@ -1,7 +1,12 @@
-﻿namespace PipelineApproval;
+﻿using PipelineApproval.Models;
+using System.Text.Json.Serialization;
 
-public class Record
+namespace PipelineApproval;
+
+public class Record : ObservableObject
 {
+    private bool isExpanded = true;
+
     public object[] previousAttempts { get; set; }
     public string id { get; set; }
     public string parentId { get; set; }
@@ -28,8 +33,13 @@ public class Record
     public string identifier { get; set; }
     public int queueId { get; set; }
     public Issue[] issues { get; set; }
-    public Approval Approval { get; set; }
 
+    [JsonIgnore]
+    public bool IsExapanded
+    {
+        get => isExpanded;
+        set => SetProperty(ref isExpanded, value);
+    }
 
     public Thickness GetMargin()
     {

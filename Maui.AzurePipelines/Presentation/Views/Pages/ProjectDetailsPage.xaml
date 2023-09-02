@@ -100,7 +100,7 @@
         <StackLayout
             Grid.RowSpan="2"
             BackgroundColor="#201f1e"
-            IsVisible="{Binding IsBusy}">
+            IsVisible="{x:Bind IsBusy}">
             <ActivityIndicator
                 IsEnabled="True"
                 IsRunning="True"

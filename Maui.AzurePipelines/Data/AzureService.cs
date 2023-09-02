@@ -93,5 +93,17 @@ public sealed class AzureService : BaseMicrosoftService, IAzureService
         return (approvals, timeline.records);
     }
 
+    public async Task<AzureApiResult<string>> GetLogAsync(
+        string organization,
+        string project,
+        string buildId,
+        string logId)
+    {
+        var credentials = await GetCredentialsAsync().ConfigureAwait(false);
+        var log = await RequestWithRetryPolicy(() => _azureApi.GetLogAsync(credentials, organization, project, buildId, logId)).ConfigureAwait(false);
+
+        return log;
+    }
+
     #endregion
 }

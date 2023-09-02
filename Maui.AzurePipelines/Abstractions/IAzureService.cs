@@ -21,4 +21,10 @@ public interface IAzureService
         string organization,
         string project,
         int id);
+
+    Task<AzureApiResult<string>> GetLogAsync(
+        string organization,
+        string project,
+        string buildId,
+        string logId);
 }
