@@ -103,7 +103,7 @@ public class MainPageViewModel : BaseViewModel, IInitializeAware
         });
     }
 
-    public async Task LoadDataAsync()
+    public async Task GoToPipelineAsync()
     {
         if (string.IsNullOrWhiteSpace(Url) || string.IsNullOrWhiteSpace(PAT))
         {
@@ -304,7 +304,7 @@ public class MainPageViewModel : BaseViewModel, IInitializeAware
             if (response.IsSuccessStatusCode)
             {
                 await DisplayAlertAsync("Sucesso", "Aprovado com sucesso!");
-                await LoadDataAsync();
+                await GoToPipelineAsync();
             }
             else
             {

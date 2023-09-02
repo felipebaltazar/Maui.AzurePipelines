@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8" ?>
-<ContentPage
+<p:BaseContentPage
     x:Class="PipelineApproval.Presentation.Views.Pages.ProjectDetailsPage"
     xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
@@ -8,6 +8,7 @@
     xmlns:local="clr-namespace:PipelineApproval.Presentation.ViewModels.Pages"
     xmlns:m="clr-namespace:PipelineApproval.Models"
     xmlns:models="clr-namespace:PipelineApproval"
+    xmlns:p="clr-namespace:PipelineApproval.Presentation.Views.Pages"
     x:Name="detailsPage"
     x:DataType="local:ProjectDetailsPageViewModel"
     BackgroundColor="#201f1e"
@@ -112,4 +113,4 @@
         </StackLayout>
     </Grid>
 
-</ContentPage>
+</p:BaseContentPage>

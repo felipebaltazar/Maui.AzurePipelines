@@ -1,24 +1,26 @@
-
-using PipelineApproval.Infrastructure.Extensions;
+using PipelineApproval.Presentation.ViewModels.Pages;
 
 namespace PipelineApproval.Presentation.Views.Pages;
 
-public partial class PipelineDetailsPage : ContentPage
+public partial class PipelineDetailsPage : BaseContentPage
 {
-	public PipelineDetailsPage()
-	{
-		InitializeComponent();
-	}
-
-    protected override bool OnBackButtonPressed()
+    public PipelineDetailsPage()
     {
-        var parameters = "NavigatingBack".ToNavigationParameters("NavigationMode");
+        InitializeComponent();
+    }
 
-        Application.Current
-            .MainPage
-            .CurrentPage()
-            .RaiseOnNavigatedFrom(parameters);
+    private void ListView_ItemSelected(object sender, SelectedItemChangedEventArgs e)
+    {
+        var item = e.SelectedItem as Record;
 
-        return base.OnBackButtonPressed();
+        if (sender is ListView listView)
+        {
+            listView.SelectedItem = null;
+        }
+
+        if (BindingContext is PipelineDetailsPageViewModel vm)
+        {
+            vm.SelectedRecord = item;
+        }
     }
 }
