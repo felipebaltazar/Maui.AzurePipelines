@@ -2,7 +2,7 @@ using PipelineApproval.Abstractions.Views;
 
 namespace PipelineApproval.Presentation.Views.Pages;
 
-public partial class LoginPage : ContentPage, IStartPage
+public partial class LoginPage : BaseContentPage, IStartPage
 {
 	public LoginPage()
 	{

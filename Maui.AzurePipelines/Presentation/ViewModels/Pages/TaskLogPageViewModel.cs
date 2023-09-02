@@ -6,9 +6,16 @@ namespace PipelineApproval.Presentation.ViewModels.Pages;
 
 public class TaskLogPageViewModel : BaseViewModel, INavigationAware
 {
+    #region Fields
+
     private readonly IAzureService _azureService;
 
-    private ObservableRangeCollection<string> logs = new ObservableRangeCollection<string>();
+    private ObservableRangeCollection<TaskLog> logs =
+        new ObservableRangeCollection<TaskLog>();
+
+    #endregion
+
+    #region Properties
 
     public string Organization { get; set; }
 
@@ -20,11 +27,15 @@ public class TaskLogPageViewModel : BaseViewModel, INavigationAware
 
     public string LogId { get; set; }
 
-    public ObservableRangeCollection<string> Logs
+    public ObservableRangeCollection<TaskLog> Logs
     {
         get => logs;
         set => SetProperty(ref logs, value);
     }
+
+    #endregion
+
+    #region Constructors
 
     public TaskLogPageViewModel(
         IAzureService azureService,
@@ -40,9 +51,17 @@ public class TaskLogPageViewModel : BaseViewModel, INavigationAware
         _azureService = azureService;
     }
 
+    #endregion
+
+    #region INavigationAware
+
     public Task OnNavigatedFrom(IDictionary<string, string> parameters)
     {
-        Logs.Clear();
+        if (parameters.ContainsKey("NavigationMode"))
+        {
+            Logs.Clear();
+        }
+
         return Task.CompletedTask;
     }
 
@@ -51,13 +70,9 @@ public class TaskLogPageViewModel : BaseViewModel, INavigationAware
         return ExecuteBusyActionOnNewTaskAsync(async () =>
         {
             var result = await _azureService.GetLogAsync(Organization, Project, RunId, LogId).ConfigureAwait(false);
-            Logs.AddRange(result.value.Select(RemoveDateTime));
+            Logs.AddRange(result.value.Select(s => new TaskLog(s)));
         });
     }
 
-    private string RemoveDateTime(string line)
-    {
-        var spaceIndex = line.IndexOf(' ');
-        return line[(spaceIndex + 1)..];
-    }
+    #endregion
 }

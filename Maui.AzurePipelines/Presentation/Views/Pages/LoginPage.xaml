@@ -1,9 +1,10 @@
 <?xml version="1.0" encoding="utf-8" ?>
-<ContentPage
+<p:BaseContentPage
     x:Class="PipelineApproval.Presentation.Views.Pages.LoginPage"
     xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
     xmlns:local="clr-namespace:PipelineApproval.Presentation.ViewModels.Pages"
+    xmlns:p="clr-namespace:PipelineApproval.Presentation.Views.Pages"
     Title="LoginPage"
     x:DataType="local:LoginPageViewModel"
     BackgroundColor="{DynamicResource System_Background_Primary}"
@@ -88,4 +89,4 @@
             </Label.GestureRecognizers>
         </Label>
     </Grid>
-</ContentPage>
+</p:BaseContentPage>
