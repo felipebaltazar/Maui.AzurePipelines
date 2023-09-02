@@ -52,6 +52,7 @@ public static class MauiProgram
 
         sCollection.AddPageAndViewModel<PipelineDetailsPage, PipelineDetailsPageViewModel>();
         sCollection.AddPageAndViewModel<ProjectDetailsPage, ProjectDetailsPageViewModel>();
+        sCollection.AddPageAndViewModel<TaskLogPage, TaskLogPageViewModel>();
         sCollection.AddPageAndViewModel<MainPage, MainPageViewModel>();
     }
 

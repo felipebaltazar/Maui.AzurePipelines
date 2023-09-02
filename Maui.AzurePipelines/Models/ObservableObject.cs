@@ -18,6 +18,10 @@ public abstract class ObservableObject : INotifyPropertyChanged
         _mainThreadService = mainThreadService;
     }
 
+    protected ObservableObject()
+    {
+    }
+
     /// <summary>
     /// Checks if a property already matches a desired value. Sets the property and
     /// notifies listeners only when necessary.
@@ -80,7 +84,7 @@ public abstract class ObservableObject : INotifyPropertyChanged
     /// <param name="args">The PropertyChangedEventArgs</param>
     protected virtual void OnPropertyChanged(PropertyChangedEventArgs args)
     {
-        if (_mainThreadService.IsMainThread)
+        if (_mainThreadService?.IsMainThread ?? true)
         {
             PropertyChanged?.Invoke(this, args);
         }

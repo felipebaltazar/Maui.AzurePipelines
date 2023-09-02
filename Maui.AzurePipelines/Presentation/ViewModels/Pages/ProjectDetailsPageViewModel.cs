@@ -3,8 +3,6 @@ using PipelineApproval.Abstractions;
 using PipelineApproval.Infrastructure.Commands;
 using PipelineApproval.Infrastructure.Extensions;
 using PipelineApproval.Models;
-using System.Text.Json;
-using System.Windows.Input;
 
 namespace PipelineApproval.Presentation.ViewModels.Pages;
 

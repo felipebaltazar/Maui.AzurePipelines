@@ -1,6 +1,5 @@
 ﻿using System.Diagnostics;
 using System.Net.Http.Headers;
-using static Android.Preferences.PreferenceActivity;
 
 namespace PipelineApproval.Models;
 
