@@ -10,6 +10,8 @@ public class TaskLogPageViewModel : BaseViewModel, INavigationAware
 
     private readonly IAzureService _azureService;
 
+    private string taskName;
+
     private ObservableRangeCollection<TaskLog> logs =
         new ObservableRangeCollection<TaskLog>();
 
@@ -26,6 +28,12 @@ public class TaskLogPageViewModel : BaseViewModel, INavigationAware
     public string RunId { get; set; }
 
     public string LogId { get; set; }
+
+    public string TaskName
+    {
+        get => taskName;
+        set => SetProperty(ref taskName, value);
+    }
 
     public ObservableRangeCollection<TaskLog> Logs
     {
@@ -57,11 +65,7 @@ public class TaskLogPageViewModel : BaseViewModel, INavigationAware
 
     public Task OnNavigatedFrom(IDictionary<string, string> parameters)
     {
-        if (parameters.ContainsKey("NavigationMode"))
-        {
-            Logs.Clear();
-        }
-
+        Logs.Clear();
         return Task.CompletedTask;
     }
 
@@ -70,7 +74,7 @@ public class TaskLogPageViewModel : BaseViewModel, INavigationAware
         return ExecuteBusyActionOnNewTaskAsync(async () =>
         {
             var result = await _azureService.GetLogAsync(Organization, Project, RunId, LogId).ConfigureAwait(false);
-            Logs.AddRange(result.value.Select(s => new TaskLog(s)));
+            Logs.ReplaceRange(result.value.Select(s => new TaskLog(s)));
         });
     }
 

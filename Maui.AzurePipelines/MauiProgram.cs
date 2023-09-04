@@ -19,6 +19,7 @@ public static class MauiProgram
         var builder = MauiApp.CreateBuilder();
         builder
             .UseMauiApp<App>()
+            .UseVirtualListView()
             .ConfigureFonts(fonts =>
             {
                 fonts.AddFont("OpenSans-Regular.ttf", "OpenSansRegular");
@@ -43,6 +44,7 @@ public static class MauiProgram
     private static void RegisterPopups(IServiceCollection sCollection)
     {
         sCollection.AddScoped<IAlertPopup, AlertPopup>();
+        sCollection.AddScoped<ISelectTeamPopup, SelectTeamPopup>();
         sCollection.AddScoped<ISelectOrganizationPopup, SelectOrganizationPopup>();
     }
 

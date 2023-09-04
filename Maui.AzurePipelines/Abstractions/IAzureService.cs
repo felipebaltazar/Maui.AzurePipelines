@@ -27,4 +27,21 @@ public interface IAzureService
         string project,
         string buildId,
         string logId);
+
+    Task<IEnumerable<Team>> GetTeamsAsync(
+        string organization);
+
+    Task<IEnumerable<Board>> GetBoardsAsync(
+        string organization,
+        string project,
+        string teamId);
+
+    Task<AzureApiResult<Project>> GetProjectsAsync(string organization);
+
+    Task<(bool IsSuccess, string Message)> ApproveAsync(
+        string organization,
+        string project,
+        params ApprovalUpdate[] update);
+
+    Task<ImageApiResult> GetImageAsync(string url);
 }

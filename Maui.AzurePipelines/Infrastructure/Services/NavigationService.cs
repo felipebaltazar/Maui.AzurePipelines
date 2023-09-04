@@ -103,6 +103,13 @@ public sealed class NavigationService : INavigationService
 
     private async Task NavigateToInternal(string url, IDictionary<string, string> parameters, bool animated = true)
     {
+        if (url == POP_URL)
+        {
+            _rootNavigation.RaiseOnNavigatedFrom(parameters);
+            await TryInvokeOnMainThread(() => _navigation.PopAsync(animated)).ConfigureAwait(false);
+            return;
+        }
+
         if (!url.StartsWith(RELATIVE_URL) &&
            !url.StartsWith(POP_URL))
         {
@@ -204,7 +211,7 @@ public sealed class NavigationService : INavigationService
         foreach (var parameter in parameters)
         {
             var property = vmType.GetProperty(parameter.Key);
-            if(property?.PropertyType == parameter.Value.GetType())
+            if (property?.PropertyType == parameter.Value.GetType())
                 property?.SetValue(page.BindingContext, parameter.Value);
         }
     }

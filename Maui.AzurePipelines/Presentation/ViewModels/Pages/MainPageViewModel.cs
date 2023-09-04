@@ -4,8 +4,6 @@ using PipelineApproval.Abstractions.Views;
 using PipelineApproval.Infrastructure.Commands;
 using PipelineApproval.Infrastructure.Extensions;
 using PipelineApproval.Models;
-using System.Collections.ObjectModel;
-using System.Data.Common;
 using System.Net.Http.Headers;
 using System.Net.Http.Json;
 using System.Security.Cryptography;
@@ -18,20 +16,28 @@ namespace PipelineApproval.Presentation.ViewModels.Pages;
 
 public class MainPageViewModel : BaseViewModel, IInitializeAware
 {
+    private readonly IPreferencesService _preferencesService;
     private readonly IAzureService _azureService;
 
-    private string _pat;
     private string _url;
 
     private string company;
     private string project;
     private string buildId;
 
+    private Team selectedTeam;
     private AccountInfo selectedOrganization;
     private AccountResponseApi accountApiResponse;
+    private IList<Team> teams;
 
     private List<Approval> approvals = new List<Approval>();
     private List<Project> projects = new List<Project>();
+
+    private ObservableRangeCollection<Board> boards =
+        new ObservableRangeCollection<Board>();
+
+    private ObservableRangeCollection<Pipeline> pinnedPipelines
+        = new ObservableRangeCollection<Pipeline>();
 
     public List<Approval> Approvals
     {
@@ -45,16 +51,28 @@ public class MainPageViewModel : BaseViewModel, IInitializeAware
         set => SetProperty(ref projects, value);
     }
 
+    public ObservableRangeCollection<Board> Boards
+    {
+        get => boards;
+        set => SetProperty(ref boards, value);
+    }
+
+    public ObservableRangeCollection<Pipeline> PinnedPipelines
+    {
+        get => pinnedPipelines;
+        set => SetProperty(ref pinnedPipelines, value);
+    }
+
     public AccountInfo SelectedOrganization
     {
         get => selectedOrganization;
         set => SetProperty(ref selectedOrganization, value);
     }
 
-    public string PAT
+    public Team SelectedTeam
     {
-        get => _pat;
-        set => SetProperty(ref _pat, value);
+        get => selectedTeam;
+        set => SetProperty(ref selectedTeam, value);
     }
 
     public string Url
@@ -66,9 +84,13 @@ public class MainPageViewModel : BaseViewModel, IInitializeAware
     public IAsyncCommand ChangeOrganizationCommand =>
         new AsyncCommand(ChangeOrganizationCommandExecuteAsync);
 
+    public IAsyncCommand ChangeTeamCommand =>
+        new AsyncCommand(ChangeTeamCommandExecuteAsync);
+
     public MainPageViewModel(
-        ILazyDependency<ILoaderService> loaderService,
         ILazyDependency<INavigationService> navigationService,
+        ILazyDependency<ILoaderService> loaderService,
+        IPreferencesService preferencesService,
         IMainThreadService mainThreadService,
         IAzureService azureService,
         ILogger logger)
@@ -78,6 +100,7 @@ public class MainPageViewModel : BaseViewModel, IInitializeAware
             mainThreadService,
             logger)
     {
+        _preferencesService = preferencesService;
         _azureService = azureService;
     }
 
@@ -87,27 +110,20 @@ public class MainPageViewModel : BaseViewModel, IInitializeAware
 
         await ExecuteBusyActionAsync(async () =>
         {
-            var pat = await SecureStorage.GetAsync(Constants.Storage.PAT_TOKEN_KEY).ConfigureAwait(false);
-
-            if (!string.IsNullOrWhiteSpace(pat))
-            {
-                PAT = pat;
-            }
-
-            var selectedIndex = Preferences.Get("SelectedOrganization", 0);
+            var selectedIndex = _preferencesService.Get("SelectedOrganization", 0);
             var selected = accountApiResponse.value.ElementAt(selectedIndex);
 
             SelectedOrganization = selected;
 
-            await LoadProjects().ConfigureAwait(false);
+            await LoadAllAsync().ConfigureAwait(false);
         });
     }
 
-    public async Task GoToPipelineAsync()
+    public async Task GoToPipelineCommandExecuteAsync()
     {
-        if (string.IsNullOrWhiteSpace(Url) || string.IsNullOrWhiteSpace(PAT))
+        if (string.IsNullOrWhiteSpace(Url))
         {
-            await DisplayAlertAsync("Erro", "Você precisa preencher o campo 'URL da pipe'");
+            await DisplayAlertAsync("Erro", "Você precisa preencher o campo 'URL'");
             return;
         }
 
@@ -139,9 +155,9 @@ public class MainPageViewModel : BaseViewModel, IInitializeAware
             }
 
             buildId = HttpUtility.ParseQueryString(uri.Query).Get("buildId");
-            
+
             var overview = await _azureService.GetBuildAsync(company, project, buildId).ConfigureAwait(false);
-            var parameters =  overview.ToNavigationParameters("BuildOverview");
+            var parameters = overview.ToNavigationParameters("BuildOverview");
 
             parameters.Add("Project", project);
             parameters.Add("Organization", company);
@@ -161,99 +177,6 @@ public class MainPageViewModel : BaseViewModel, IInitializeAware
         }
     }
 
-    private async Task LoadProjects()
-    {
-        var credentials = Convert.ToBase64String(ASCIIEncoding.ASCII.GetBytes(string.Format("{0}:{1}", "", PAT)));
-
-        using (var client = new HttpClient())
-        {
-            var baseUrl = $"https://dev.azure.com/{selectedOrganization.accountName}/";
-            client.BaseAddress = new Uri(baseUrl);
-            client.DefaultRequestHeaders.Accept.Clear();
-            client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-            client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Basic", credentials);
-
-            var response = await client.GetAsync($"_apis/projects?api-version=7.0&getDefaultTeamImageUrl=true");
-            response.EnsureSuccessStatusCode();
-
-            var apiresponse = await response.Content.ReadFromJsonAsync<ProjectsResponseApi>();
-            var imagesTasks = apiresponse.value
-                .Select(p =>
-                {
-                    p.NavigateToProjectCommand =
-                            new AsyncCommand(() => ExecuteBusyActionOnNewTaskAsync(() => NavigateToProjectCommandExecuteAsync(p)));
-
-                    async Task<(HttpResponseMessage, Project)> downloadImage()
-                    {
-                        try
-                        {
-                            var teste = p.defaultTeamImageUrl.Replace(baseUrl, string.Empty);
-                            var result = await client.GetAsync(p.defaultTeamImageUrl.Replace(baseUrl, string.Empty)).ConfigureAwait(false);
-                            return (result, p);
-                        }
-                        catch (Exception)
-                        {
-                        }
-
-                        return (null, p);
-                    }
-
-                    return downloadImage();
-                });
-
-            var httpResponses = await Task.WhenAll(imagesTasks).ConfigureAwait(false);
-            var filePaths = httpResponses.Select(SaveImageAsync);
-            var projects = await Task.WhenAll(filePaths).ConfigureAwait(false);
-
-            Projects = projects.ToList();
-        }
-    }
-
-    private async Task<Project> SaveImageAsync((HttpResponseMessage message, Project project) result)
-    {
-        if (result.message == null)
-            return result.project;
-
-        try
-        {
-            var hash = GenerateHash(result.project.defaultTeamImageUrl);
-            var cacheDir = Path.Combine(FileSystem.Current.CacheDirectory, "images");
-            var finalPath = Path.Combine(cacheDir, hash + ".png");
-
-            if (!Directory.Exists(cacheDir))
-                Directory.CreateDirectory(cacheDir);
-
-            if (!File.Exists(finalPath))
-            {
-                var apiResult = await result.message.Content.ReadFromJsonAsync<ImageApiResult>();
-                File.WriteAllBytes(finalPath, Convert.FromBase64String(apiResult.imageData));
-            }
-
-            result.project.TeamImageFile = finalPath;
-
-            return result.project;
-        }
-        catch (Exception ex)
-        {
-            Logger.LogError(ex, "Não foi possivel baixar imagem");
-        }
-
-        return result.project;
-    }
-
-    public string GenerateHash(string text)
-    {
-        using (var sha = SHA256.Create())
-        {
-            var bytes = sha.ComputeHash(Encoding.UTF8.GetBytes(text));
-
-            var hexChars = bytes
-                .Select(b => b.ToString("X2"));
-
-            return string.Concat(hexChars);
-        }
-    }
-
     private async Task ChangeOrganizationCommandExecuteAsync()
     {
         await NavigationService.PushPopupAsync<ISelectOrganizationPopup>(p =>
@@ -263,56 +186,25 @@ public class MainPageViewModel : BaseViewModel, IInitializeAware
             {
                 SelectedOrganization = s;
                 var index = Array.IndexOf(accountApiResponse.value, s);
-                Preferences.Set("SelectedOrganization", index);
-                _ = Task.Run(LoadProjects);
+                _preferencesService.Set("SelectedOrganization", index);
+                _ = Task.Run(LoadAllAsync);
             };
         }).ConfigureAwait(false);
     }
 
-    private async Task ApproveCommandExecuteAsync(Approval elementToApprove)
+    private async Task ChangeTeamCommandExecuteAsync()
     {
-        if (string.IsNullOrEmpty(elementToApprove.Comment))
+        await NavigationService.PushPopupAsync<ISelectTeamPopup>(p =>
         {
-            await DisplayAlertAsync("Erro", "Você precisa preencher o campo comentario!");
-            return;
-        }
-
-        var credentials = Convert.ToBase64String(ASCIIEncoding.ASCII.GetBytes(string.Format("{0}:{1}", "", PAT)));
-        var approvals = new List<Approval>();
-
-        using (var client = new HttpClient())
-        {
-            client.BaseAddress = new Uri($"https://dev.azure.com/{company}/{project}/");
-            client.DefaultRequestHeaders.Accept.Clear();
-            client.DefaultRequestHeaders.Accept.Add(new System.Net.Http.Headers.MediaTypeWithQualityHeaderValue("application/json"));
-            client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Basic", credentials);
-
-            var newUpdate = new ApprovalUpdate()
+            p.Teams = teams;
+            p.OnSelected = (s) =>
             {
-                approvalId = elementToApprove.id,
-                status = "approved",
-                comments = elementToApprove.Comment
+                SelectedTeam = s;
+                var index = teams.IndexOf(s);
+                _preferencesService.Set(SelectedOrganization.accountName + "_SelectedTeam", index);
+                _ = Task.Run(LoadBoardsAsync);
             };
-
-            var body = new[]
-            {
-                    newUpdate
-                };
-
-            var response = await client.PatchAsJsonAsync($"_apis/pipelines/approvals?api-version=7.1-preview.1", body);
-
-            if (response.IsSuccessStatusCode)
-            {
-                await DisplayAlertAsync("Sucesso", "Aprovado com sucesso!");
-                await GoToPipelineAsync();
-            }
-            else
-            {
-                var responseText = await response.Content.ReadAsStringAsync();
-                await DisplayAlertAsync("Erro na request",
-                                        $"Não foi possível aprovar pipeline, tente novamente.\nResponse:{responseText}");
-            }
-        }
+        }).ConfigureAwait(false);
     }
 
     private Task NavigateToProjectCommandExecuteAsync(Project project)
@@ -322,14 +214,46 @@ public class MainPageViewModel : BaseViewModel, IInitializeAware
         return NavigationService.NavigateToAsync("/ProjectDetailsPage", objParameter);
     }
 
-    private Task DisplayAlertAsync(string title, string message, string cancelButton = "Entendi!")
+    private async Task LoadAllAsync()
     {
-        return NavigationService.PushPopupAsync<IAlertPopup>(p =>
-        {
-            p.MessageTitle = title;
-            p.Message = message;
-            p.CancelButton = cancelButton;
-        });
+        await Task.WhenAll(LoadProjectsAsync(),
+                           LoadBoardsAsync()).ConfigureAwait(false);
     }
 
+    private async Task LoadProjectsAsync()
+    {
+        var apiResponse = await _azureService.GetProjectsAsync(selectedOrganization.accountName).ConfigureAwait(false);
+        var projects = apiResponse.value
+            .Select(p =>
+            {
+                p.NavigateToProjectCommand =
+                        new AsyncCommand(() => ExecuteBusyActionOnNewTaskAsync(() => NavigateToProjectCommandExecuteAsync(p)));
+                return p;
+            });
+
+
+
+        Projects = projects.ToList();
+    }
+
+    private async Task LoadBoardsAsync()
+    {
+        var selectedIndex = _preferencesService.Get(SelectedOrganization.accountName + "_SelectedTeam", 0);
+        var result = await _azureService.GetTeamsAsync(SelectedOrganization.accountName).ConfigureAwait(false);
+
+        teams = result.ToList();
+        SelectedTeam = teams.ElementAt(selectedIndex);
+
+        var boards = await _azureService.GetBoardsAsync(SelectedOrganization.accountName, SelectedTeam.ProjectName, SelectedTeam.Id).ConfigureAwait(false);
+        Boards.ReplaceRange(boards);
+    }
+
+    private async Task LoadPinnedPipelinesAsync()
+    {
+        var pinnedPipelinesStr = _preferencesService.Get(SelectedOrganization.accountName + "_PinnedPipelines", "");
+        if (string.IsNullOrWhiteSpace(pinnedPipelinesStr))
+            return;
+
+        //TODO: Listar pipelines pinadas
+    }
 }

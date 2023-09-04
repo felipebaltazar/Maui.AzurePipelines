@@ -46,6 +46,6 @@ public partial class MainPage : BaseContentPage
     {
         TapGestureRecognizer_Tapped(sender, null);
 
-        _ = Task.Run(ViewModel.GoToPipelineAsync);
+        _ = Task.Run(ViewModel.GoToPipelineCommandExecuteAsync);
     }
 }

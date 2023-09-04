@@ -5,248 +5,308 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
     xmlns:b="clr-namespace:PipelineApproval.Presentation.Views.Behaviors"
     xmlns:c="clr-namespace:PipelineApproval"
+    xmlns:f="clr-namespace:PipelineApproval.Presentation"
     xmlns:local="clr-namespace:PipelineApproval.Presentation.ViewModels.Pages"
     xmlns:p="clr-namespace:PipelineApproval.Presentation.Views.Pages"
+    xmlns:vlv="clr-namespace:Microsoft.Maui.Controls;assembly=VirtualListView"
     Title="PipelineDetailsPage"
     x:DataType="local:PipelineDetailsPageViewModel"
     BackgroundColor="#201f1e"
     NavigationPage.HasNavigationBar="False">
+    <Grid
+        ColumnDefinitions="48,*,48"
+        ColumnSpacing="0"
+        RowDefinitions="60,*"
+        RowSpacing="0">
 
-    <StackLayout
-        Padding="16"
-        CompressedLayout.IsHeadless="True"
-        Orientation="Vertical"
-        Spacing="14">
-
-        <Label FontFamily="OpenSansSemibold" FontSize="14">
-            <Label.FormattedText>
-                <FormattedString>
-                    <Span Text="Triggered By: " TextColor="LightGray" />
-                    <Span Text="&#10;" />
-                    <Span Text="{x:Bind BuildOverview.requestedFor.displayName}" TextColor="White" />
-                </FormattedString>
-            </Label.FormattedText>
-        </Label>
-
-        <Label FontFamily="OpenSansSemibold" FontSize="14">
-            <Label.FormattedText>
-                <FormattedString>
-                    <Span Text="Project: " TextColor="LightGray" />
-                    <Span Text="{x:Bind BuildOverview.project.name}" TextColor="White" />
-                </FormattedString>
-            </Label.FormattedText>
-        </Label>
-
-        <Label FontFamily="OpenSansSemibold" FontSize="14">
-            <Label.FormattedText>
-                <FormattedString>
-                    <Span Text="Repository: " TextColor="LightGray" />
-                    <Span Text="{x:Bind BuildOverview.repository.name}" TextColor="White" />
-                </FormattedString>
-            </Label.FormattedText>
-        </Label>
-
-        <Label FontFamily="OpenSansSemibold" FontSize="14">
-            <Label.FormattedText>
-                <FormattedString>
-                    <Span Text="Branch: " TextColor="LightGray" />
-                    <Span Text="{x:Bind BuildOverview.sourceBranch}" TextColor="White" />
-                </FormattedString>
-            </Label.FormattedText>
-        </Label>
-
-        <BoxView HeightRequest="1" Color="White" />
-
-        <Label FontFamily="OpenSansSemibold" FontSize="14">
-            <Label.FormattedText>
-                <FormattedString>
-                    <Span Text="Id: " TextColor="LightGray" />
-                    <Span Text="{x:Bind BuildOverview.id}" TextColor="White" />
-                    <Span Text="        Number: " TextColor="LightGray" />
-                    <Span Text="{x:Bind BuildOverview.buildNumber}" TextColor="White" />
-                </FormattedString>
-            </Label.FormattedText>
-        </Label>
-
-        <Label FontFamily="OpenSansSemibold" FontSize="14">
-            <Label.FormattedText>
-                <FormattedString>
-                    <Span Text="Queued at: " TextColor="LightGray" />
-                    <Span Text="{x:Bind BuildOverview.queueTime}" TextColor="White" />
-                </FormattedString>
-            </Label.FormattedText>
-        </Label>
-
-        <Label FontFamily="OpenSansSemibold" FontSize="14">
-            <Label.FormattedText>
-                <FormattedString>
-                    <Span Text="Started at: " TextColor="LightGray" />
-                    <Span Text="{x:Bind BuildOverview.startTime}" TextColor="White" />
-                </FormattedString>
-            </Label.FormattedText>
+        <Label
+            FontFamily="FontAwesomeSolid"
+            FontSize="20"
+            HorizontalTextAlignment="Center"
+            Text="{x:Static f:FontAwesome.ChevronLeft}"
+            VerticalTextAlignment="Center">
+            <Label.GestureRecognizers>
+                <TapGestureRecognizer Command="{x:Bind NavigateBackCommand}" />
+            </Label.GestureRecognizers>
         </Label>
 
         <Label
+            Grid.Column="1"
             FontFamily="OpenSansSemibold"
-            FontSize="14"
-            IsVisible="{x:Bind Approvals.Count is not eq 0}"
-            Text="Approvals: "
-            TextColor="LightGray" />
+            FontSize="18"
+            HorizontalTextAlignment="Center"
+            LineBreakMode="TailTruncation"
+            Text="{Binding BuildOverview.definition.name}"
+            VerticalTextAlignment="Center" />
 
-        <CollectionView ItemsSource="{x:Bind Approvals, IsItemsSource=True}">
-            <CollectionView.ItemsLayout>
-                <LinearItemsLayout Orientation="Horizontal" />
-            </CollectionView.ItemsLayout>
+        <ScrollView
+            Grid.Row="1"
+            Grid.ColumnSpan="3"
+            VerticalScrollBarVisibility="Never">
+            <StackLayout
+                Padding="16,0"
+                CompressedLayout.IsHeadless="True"
+                Orientation="Vertical"
+                Spacing="14">
 
-            <CollectionView.ItemTemplate>
-                <DataTemplate>
-                    <Frame
-                        Margin="8"
-                        Padding="6"
-                        x:DataType="c:Approval"
-                        BackgroundColor="#201f1e"
-                        BorderColor="White"
-                        CornerRadius="1"
-                        HasShadow="True"
-                        IsClippedToBounds="True">
-                        <StackLayout
-                            Padding="6"
-                            CompressedLayout.IsHeadless="True"
-                            Orientation="Vertical"
-                            Spacing="3"
-                            VerticalOptions="Center">
+                <Label FontFamily="OpenSansSemibold" FontSize="14">
+                    <Label.FormattedText>
+                        <FormattedString>
+                            <Span Text="Triggered By: " TextColor="LightGray" />
+                            <Span Text="&#10;" />
+                            <Span Text="{x:Bind BuildOverview.requestedFor.displayName}" TextColor="White" />
+                        </FormattedString>
+                    </Label.FormattedText>
+                </Label>
 
-                            <Label
-                                Margin="0,15,0,5"
-                                FontAttributes="Bold"
-                                Text="Aprovadores:"
-                                TextColor="White"
-                                VerticalTextAlignment="Center" />
+                <Label FontFamily="OpenSansSemibold" FontSize="14">
+                    <Label.FormattedText>
+                        <FormattedString>
+                            <Span Text="Project: " TextColor="LightGray" />
+                            <Span Text="{x:Bind BuildOverview.project.name}" TextColor="White" />
+                        </FormattedString>
+                    </Label.FormattedText>
+                </Label>
 
+                <Label FontFamily="OpenSansSemibold" FontSize="14">
+                    <Label.FormattedText>
+                        <FormattedString>
+                            <Span Text="Repository: " TextColor="LightGray" />
+                            <Span Text="{x:Bind BuildOverview.repository.name}" TextColor="White" />
+                        </FormattedString>
+                    </Label.FormattedText>
+                </Label>
+
+                <Label FontFamily="OpenSansSemibold" FontSize="14">
+                    <Label.FormattedText>
+                        <FormattedString>
+                            <Span Text="Branch: " TextColor="LightGray" />
+                            <Span Text="{x:Bind BuildOverview.sourceBranch}" TextColor="White" />
+                        </FormattedString>
+                    </Label.FormattedText>
+                </Label>
+
+                <BoxView HeightRequest="1" Color="White" />
+
+                <Label FontFamily="OpenSansSemibold" FontSize="14">
+                    <Label.FormattedText>
+                        <FormattedString>
+                            <Span Text="Id: " TextColor="LightGray" />
+                            <Span Text="{x:Bind BuildOverview.id}" TextColor="White" />
+                            <Span Text="        Number: " TextColor="LightGray" />
+                            <Span Text="{x:Bind BuildOverview.buildNumber}" TextColor="White" />
+                        </FormattedString>
+                    </Label.FormattedText>
+                </Label>
+
+                <Label FontFamily="OpenSansSemibold" FontSize="14">
+                    <Label.FormattedText>
+                        <FormattedString>
+                            <Span Text="Queued at: " TextColor="LightGray" />
+                            <Span Text="{x:Bind BuildOverview.queueTime}" TextColor="White" />
+                        </FormattedString>
+                    </Label.FormattedText>
+                </Label>
+
+                <Label FontFamily="OpenSansSemibold" FontSize="14">
+                    <Label.FormattedText>
+                        <FormattedString>
+                            <Span Text="Started at: " TextColor="LightGray" />
+                            <Span Text="{x:Bind BuildOverview.startTime}" TextColor="White" />
+                        </FormattedString>
+                    </Label.FormattedText>
+                </Label>
+
+                <Label
+                    FontFamily="OpenSansSemibold"
+                    FontSize="14"
+                    IsVisible="{x:Bind Approvals.Count is not eq 0}"
+                    Text="Approvals: "
+                    TextColor="LightGray" />
+
+                <CollectionView ItemsSource="{x:Bind Approvals, IsItemsSource=True}">
+                    <CollectionView.ItemsLayout>
+                        <LinearItemsLayout Orientation="Horizontal" />
+                    </CollectionView.ItemsLayout>
+
+                    <CollectionView.ItemTemplate>
+                        <DataTemplate>
                             <Frame
-                                Padding="5"
+                                Margin="8"
+                                Padding="6"
+                                x:DataType="c:Approval"
                                 BackgroundColor="#201f1e"
-                                BorderColor="#0078d4"
-                                CornerRadius="3">
-
+                                BorderColor="White"
+                                CornerRadius="1"
+                                HasShadow="True"
+                                IsClippedToBounds="True">
                                 <StackLayout
+                                    Padding="6"
                                     CompressedLayout.IsHeadless="True"
                                     Orientation="Vertical"
-                                    Spacing="5">
+                                    Spacing="3"
+                                    VerticalOptions="Center">
 
-                                    <Label TextColor="White" VerticalTextAlignment="Center">
-                                        <Label.FormattedText>
-                                            <FormattedString>
-                                                <FormattedString.Spans>
-                                                    <Span FontAttributes="Bold" Text="Name: " />
-                                                    <Span Text="{x:Bind steps[0].assignedApprover.displayName}" />
-                                                </FormattedString.Spans>
-                                            </FormattedString>
-                                        </Label.FormattedText>
-                                    </Label>
+                                    <Label
+                                        Margin="0,15,0,5"
+                                        FontAttributes="Bold"
+                                        Text="Aprovadores:"
+                                        TextColor="White"
+                                        VerticalTextAlignment="Center" />
 
-                                    <Label TextColor="White" VerticalTextAlignment="Center">
-                                        <Label.FormattedText>
-                                            <FormattedString>
-                                                <FormattedString.Spans>
-                                                    <Span FontAttributes="Bold" Text="Status: " />
-                                                    <Span Text="{x:Bind steps[0].status}" />
-                                                </FormattedString.Spans>
-                                            </FormattedString>
-                                        </Label.FormattedText>
-                                    </Label>
+                                    <Frame
+                                        Padding="5"
+                                        BackgroundColor="#201f1e"
+                                        BorderColor="#0078d4"
+                                        CornerRadius="3">
+
+                                        <StackLayout
+                                            CompressedLayout.IsHeadless="True"
+                                            Orientation="Vertical"
+                                            Spacing="5">
+
+                                            <Label TextColor="White" VerticalTextAlignment="Center">
+                                                <Label.FormattedText>
+                                                    <FormattedString>
+                                                        <FormattedString.Spans>
+                                                            <Span FontAttributes="Bold" Text="Name: " />
+                                                            <Span Text="{x:Bind steps[0].assignedApprover.displayName}" />
+                                                        </FormattedString.Spans>
+                                                    </FormattedString>
+                                                </Label.FormattedText>
+                                            </Label>
+
+                                            <Label TextColor="White" VerticalTextAlignment="Center">
+                                                <Label.FormattedText>
+                                                    <FormattedString>
+                                                        <FormattedString.Spans>
+                                                            <Span FontAttributes="Bold" Text="Status: " />
+                                                            <Span Text="{x:Bind steps[0].status}" />
+                                                        </FormattedString.Spans>
+                                                    </FormattedString>
+                                                </Label.FormattedText>
+                                            </Label>
+                                        </StackLayout>
+                                    </Frame>
+
+                                    <StackLayout
+                                        Margin="0,25,0,5"
+                                        CompressedLayout.IsHeadless="True"
+                                        IsVisible="{x:Bind steps[0].status is not eq 'approved'}"
+                                        Orientation="Horizontal"
+                                        Spacing="10">
+                                        <Entry
+                                            BackgroundColor="White"
+                                            HorizontalOptions="FillAndExpand"
+                                            Placeholder="(Comentário)"
+                                            PlaceholderColor="Gray"
+                                            Text="{x:Bind Comment, Mode=TwoWay}"
+                                            TextColor="Black" />
+
+                                        <Button
+                                            BackgroundColor="#0078d4"
+                                            Command="{x:Bind ApproveCommand}"
+                                            CommandParameter="{Binding .}"
+                                            CornerRadius="0"
+                                            HorizontalOptions="End"
+                                            Text="Aprovar"
+                                            TextColor="White" />
+                                    </StackLayout>
                                 </StackLayout>
                             </Frame>
 
-                            <StackLayout
-                                Margin="0,25,0,5"
-                                CompressedLayout.IsHeadless="True"
-                                IsVisible="{x:Bind steps[0].status is not eq 'approved'}"
-                                Orientation="Horizontal"
-                                Spacing="10">
-                                <Entry
-                                    BackgroundColor="White"
-                                    HorizontalOptions="FillAndExpand"
-                                    Placeholder="(Comentário)"
-                                    PlaceholderColor="Gray"
-                                    Text="{x:Bind Comment, Mode=TwoWay}"
-                                    TextColor="Black" />
+                        </DataTemplate>
 
-                                <Button
-                                    BackgroundColor="#0078d4"
-                                    Command="{x:Bind ApproveCommand}"
-                                    CommandParameter="{Binding .}"
-                                    CornerRadius="0"
-                                    HorizontalOptions="End"
-                                    Text="Aprovar"
-                                    TextColor="White" />
-                            </StackLayout>
+                    </CollectionView.ItemTemplate>
+                </CollectionView>
+
+                <Label
+                    FontFamily="OpenSansSemibold"
+                    FontSize="14"
+                    Text="Jobs: "
+                    TextColor="LightGray" />
+
+                <vlv:VirtualListView
+                    Adapter="{x:Bind Records}"
+                    OnSelectedItemsChanged="VirtualListView_OnSelectedItemsChanged"
+                    SelectedItem="{x:Bind SelectedRecordPosition}"
+                    SelectionMode="Single"
+                    VerticalOptions="FillAndExpand">
+                    <vlv:VirtualListView.ItemTemplate>
+                        <DataTemplate>
+                            <vlv:VirtualViewCell SelectedBackground="LightGray" UnselectedBackground="Transparent">
+                                <StackLayout CompressedLayout.IsHeadless="True" Orientation="Vertical">
+                                    <BoxView HeightRequest="1" Color="Gray" />
+                                    <StackLayout
+                                        Margin="{x:Bind GetMargin()}"
+                                        x:DataType="c:Record"
+                                        HeightRequest="48"
+                                        Orientation="Horizontal"
+                                        Spacing="10">
+
+                                        <Label
+                                            Grid.RowSpan="2"
+                                            FontFamily="DevOpsIcons"
+                                            FontSize="20"
+                                            HorizontalTextAlignment="Center"
+                                            Text="{x:Bind GetStateIcon()}"
+                                            TextColor="{x:Bind GetStateColor()}"
+                                            VerticalTextAlignment="Center">
+                                            <Label.Behaviors>
+                                                <b:AnimationBehavior IsActive="{x:Bind state eq 'inProgress'}" />
+                                            </Label.Behaviors>
+                                        </Label>
+
+                                        <Label
+                                            Text="{x:Bind name}"
+                                            TextColor="White"
+                                            VerticalTextAlignment="Center" />
+
+                                        <Label
+                                            FontSize="10"
+                                            TextColor="White"
+                                            VerticalTextAlignment="Center">
+                                            <Label.FormattedText>
+                                                <FormattedString>
+                                                    <Span Text="(" />
+                                                    <Span Text="{x:Bind type}" />
+                                                    <Span Text=")" />
+                                                </FormattedString>
+                                            </Label.FormattedText>
+                                        </Label>
+
+                                        <!--<Label
+                                            FontFamily="FontAwesomeSolid"
+                                            FontSize="20"
+                                            HorizontalTextAlignment="Center"
+                                            IsVisible="{x:Bind type is not eq 'Task'}"
+                                            Text="{x:Bind IsExpanded ?  f:FontAwesome.ChevronUp : f:FontAwesome.ChevronDown}"
+                                            VerticalTextAlignment="Center" />-->
+                                    </StackLayout>
+
+                                </StackLayout>
+
+                            </vlv:VirtualViewCell>
+
+                        </DataTemplate>
+                    </vlv:VirtualListView.ItemTemplate>
+                    <vlv:VirtualListView.EmptyView>
+
+                        <StackLayout VerticalOptions="FillAndExpand">
+                            <ActivityIndicator
+                                HeightRequest="48"
+                                HorizontalOptions="Center"
+                                IsRunning="True"
+                                IsVisible="True"
+                                VerticalOptions="Center"
+                                WidthRequest="48"
+                                Color="White" />
                         </StackLayout>
-                    </Frame>
 
-                </DataTemplate>
+                    </vlv:VirtualListView.EmptyView>
+                </vlv:VirtualListView>
 
-            </CollectionView.ItemTemplate>
-        </CollectionView>
-
-        <Label
-            FontFamily="OpenSansSemibold"
-            FontSize="14"
-            Text="Jobs: "
-            TextColor="LightGray" />
-
-        <ListView
-            CachingStrategy="RecycleElementAndDataTemplate"
-            HasUnevenRows="False"
-            IsPullToRefreshEnabled="False"
-            ItemSelected="ListView_ItemSelected"
-            ItemsSource="{x:Bind Records, IsItemsSource=True}"
-            VerticalOptions="FillAndExpand">
-            <ListView.ItemTemplate>
-                <DataTemplate>
-                    <ViewCell>
-                        <StackLayout
-                            Margin="{x:Bind GetMargin()}"
-                            x:DataType="c:Record"
-                            Orientation="Horizontal"
-                            Spacing="10">
-
-                            <Label
-                                Grid.RowSpan="2"
-                                FontFamily="DevOpsIcons"
-                                FontSize="20"
-                                HorizontalTextAlignment="Center"
-                                Text="{x:Bind GetStateIcon()}"
-                                TextColor="{x:Bind GetStateColor()}"
-                                VerticalTextAlignment="Center">
-                                <Label.Behaviors>
-                                    <b:AnimationBehavior IsActive="{x:Bind state eq 'inProgress'}" />
-                                </Label.Behaviors>
-                            </Label>
-
-                            <Label
-                                Text="{x:Bind name}"
-                                TextColor="White"
-                                VerticalTextAlignment="Center" />
-
-                            <Label
-                                FontSize="10"
-                                TextColor="White"
-                                VerticalTextAlignment="Center">
-                                <Label.FormattedText>
-                                    <FormattedString>
-                                        <Span Text="(" />
-                                        <Span Text="{x:Bind type}" />
-                                        <Span Text=")" />
-                                    </FormattedString>
-                                </Label.FormattedText>
-                            </Label>
-                        </StackLayout>
-                    </ViewCell>
-
-                </DataTemplate>
-            </ListView.ItemTemplate>
-        </ListView>
-
-    </StackLayout>
+            </StackLayout>
+        </ScrollView>
+    </Grid>
 </p:BaseContentPage>

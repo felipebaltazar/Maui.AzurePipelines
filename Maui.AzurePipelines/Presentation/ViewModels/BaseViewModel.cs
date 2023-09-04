@@ -1,5 +1,8 @@
 ﻿using Microsoft.Extensions.Logging;
 using PipelineApproval.Abstractions;
+using PipelineApproval.Abstractions.Views;
+using PipelineApproval.Infrastructure.Commands;
+using PipelineApproval.Infrastructure.Extensions;
 using PipelineApproval.Models;
 using System.Runtime.CompilerServices;
 
@@ -24,6 +27,9 @@ public abstract class BaseViewModel : ObservableObject, IQueryAttributable
         get => isBusy;
         set => SetProperty(ref isBusy, value, onChanged: OnIsBusyChanged);
     }
+
+    public IAsyncCommand NavigateBackCommand =>
+        new AsyncCommand(NavigateBackCommandExecuteAsync);
 
     protected INavigationService NavigationService { get => _navigationService.Value; }
 
@@ -126,6 +132,22 @@ public abstract class BaseViewModel : ObservableObject, IQueryAttributable
         [CallerLineNumber] int lineNumber = 0)
     {
         _ = Task.Run(() => ExecuteBusyAction(theBusyAction, memberName, filePath, lineNumber));
+    }
+
+    protected Task DisplayAlertAsync(string title, string message, string cancelButton = "Entendi!")
+    {
+        return NavigationService.PushPopupAsync<IAlertPopup>(p =>
+        {
+            p.MessageTitle = title;
+            p.Message = message;
+            p.CancelButton = cancelButton;
+        });
+    }
+
+    protected virtual Task NavigateBackCommandExecuteAsync()
+    {
+        var parameters = "NavigatingBack".ToNavigationParameters("NavigationMode");
+        return NavigationService.NavigateToAsync("../", parameters);
     }
 
     private void OnIsBusyChanged()
