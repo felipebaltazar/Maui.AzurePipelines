@@ -158,7 +158,8 @@ public class PipelineDetailsPageViewModel : BaseViewModel, INavigationAware
                 approvalsCache = result.Approvals;
             }
 
-            Approvals.AddRange(approvalsCache.Where(a => a.status != "approved").Select(SetApprovalCommand));
+            var approvals = approvalsCache.Where(a => a.status != "approved").Select(SetApprovalCommand);
+            MainThreadService.BeginInvokeOnMainThread(() => Approvals.AddRange(approvals));
 
             var orderedRecord = recordsCache.OrderBy(r => r.order);
             var childs = orderedRecord.Where(r => !string.IsNullOrWhiteSpace(r.parentId))
