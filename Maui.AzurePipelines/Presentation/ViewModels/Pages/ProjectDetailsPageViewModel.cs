@@ -44,10 +44,10 @@ public class ProjectDetailsPageViewModel : BaseViewModel, INavigationAware
     }
 
     public IAsyncCommand LoadMoreDataCommand =>
-        new AsyncCommand(() => Task.Run(LoadPipelinesAsync), (a) => !IsLoading);
+        new AsyncCommand(() => ExecuteBusyActionOnNewTaskAsync(()=> LoadPipelinesAsync()), (a) => !IsLoading);
 
     public IAsyncCommand<BuildOverview> PipelineSelectedCommand =>
-        new AsyncCommand<BuildOverview>((b) => Task.Run(() => NavigateToPipelineDetailsAsync(b)), (a) => !IsLoading);
+        new AsyncCommand<BuildOverview>((b) => ExecuteBusyActionOnNewTaskAsync(() => NavigateToPipelineDetailsAsync(b)), (a) => !IsLoading);
 
     #endregion
 

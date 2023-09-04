@@ -5,6 +5,7 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
     xmlns:b="clr-namespace:PipelineApproval.Presentation.Views.Behaviors"
     xmlns:c="clr-namespace:PipelineApproval"
+    xmlns:f="clr-namespace:PipelineApproval.Presentation"
     xmlns:local="clr-namespace:PipelineApproval.Presentation.ViewModels.Pages"
     xmlns:m="clr-namespace:PipelineApproval.Models"
     xmlns:models="clr-namespace:PipelineApproval"
@@ -13,10 +14,25 @@
     x:DataType="local:ProjectDetailsPageViewModel"
     BackgroundColor="#201f1e"
     NavigationPage.HasNavigationBar="False">
-    <Grid RowDefinitions="80,*">
+    <Grid
+        ColumnDefinitions="48,*,48"
+        ColumnSpacing="0"
+        RowDefinitions="80,*">
+
+        <Label
+            FontFamily="FontAwesomeSolid"
+            FontSize="20"
+            HorizontalTextAlignment="Center"
+            Text="{x:Static f:FontAwesome.ChevronLeft}"
+            VerticalTextAlignment="Center">
+            <Label.GestureRecognizers>
+                <TapGestureRecognizer Command="{x:Bind NavigateBackCommand}" />
+            </Label.GestureRecognizers>
+        </Label>
 
         <Entry
-            Margin="16"
+            Grid.Column="1"
+            Margin="0,16"
             HorizontalTextAlignment="Center"
             Placeholder="Pesquisar"
             PlaceholderColor="LightGray"
@@ -24,6 +40,7 @@
 
         <CollectionView
             Grid.Row="1"
+            Grid.ColumnSpan="3"
             ItemsSource="{x:Bind Pipelines, IsItemsSource=True}"
             RemainingItemsThreshold="50"
             RemainingItemsThresholdReachedCommand="{x:Bind LoadMoreDataCommand}">
@@ -97,9 +114,9 @@
             </CollectionView.ItemTemplate>
         </CollectionView>
 
-
         <StackLayout
             Grid.RowSpan="2"
+            Grid.ColumnSpan="3"
             BackgroundColor="#201f1e"
             IsVisible="{x:Bind IsBusy}">
             <ActivityIndicator

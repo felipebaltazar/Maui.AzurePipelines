@@ -5,7 +5,7 @@ namespace PipelineApproval;
 
 public class Record : ObservableObject
 {
-    private bool isExpanded = true;
+    private bool isExpanded;
 
     public object[] previousAttempts { get; set; }
     public string id { get; set; }
@@ -35,9 +35,9 @@ public class Record : ObservableObject
     public Issue[] issues { get; set; }
 
     [JsonIgnore]
-    public bool IsExapanded
+    public bool IsExpanded
     {
-        get => isExpanded;
+        get => true;// type == "Checkpoint" || type == "Phase" || isExpanded;
         set => SetProperty(ref isExpanded, value);
     }
 
@@ -58,7 +58,11 @@ public class Record : ObservableObject
 
     public string GetStateIcon()
     {
-        if (state == "inProgress")
+        if(result == "skipped")
+        {
+            return Icons.Skipped;
+        }
+        else if (state == "inProgress")
         {
             return Icons.Running;
         }
@@ -84,7 +88,7 @@ public class Record : ObservableObject
         {
             return Color.FromArgb("#0078d4");
         }
-        else if (state == "notStarted" || state == "pending")
+        else if (result == "skipped" || state == "notStarted" || state == "pending")
         {
             return Colors.White;
         }

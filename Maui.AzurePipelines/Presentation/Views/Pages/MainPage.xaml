@@ -13,7 +13,7 @@
     BackgroundColor="#201f1e"
     NavigationPage.HasNavigationBar="False">
 
-    <Grid ColumnDefinitions="*,200,*" RowDefinitions="80, 60, 80, 105,*">
+    <Grid ColumnDefinitions="*,200,*" RowDefinitions="80, 60, 80, 105, 250, 40,*">
         <Frame
             Grid.ColumnSpan="3"
             Margin="60"
@@ -149,12 +149,111 @@
 
         </CollectionView>
 
-        <Grid
+        <Label
+            Grid.Row="3"
+            Grid.ColumnSpan="2"
+            Margin="16,0,0,0"
+            FontAttributes="Bold"
+            FontSize="20"
+            TextColor="White"
+            VerticalTextAlignment="Center">
+            <Label.FormattedText>
+                <FormattedString>
+                    <Span FontFamily="DevOpsIcons" Text="{x:Static c:Icons.Task}" />
+                    <Span FontFamily="OpenSansSemibold" Text=" Boards" />
+                </FormattedString>
+            </Label.FormattedText>
+        </Label>
+
+        <Frame
+            Grid.Row="3"
+            Grid.Column="1"
+            Grid.ColumnSpan="2"
+            Margin="40,0,16,0"
+            Padding="8"
+            BackgroundColor="#424242"
+            BorderColor="#424242"
+            CornerRadius="8"
+            HeightRequest="32">
+            <StackLayout
+                Padding="6,0"
+                Orientation="Horizontal"
+                Spacing="6">
+
+                <Label
+                    FontAttributes="Bold"
+                    FontSize="12"
+                    HorizontalOptions="CenterAndExpand"
+                    LineBreakMode="TailTruncation"
+                    Text="{x:Bind SelectedTeam.Name}"
+                    TextColor="White"
+                    VerticalTextAlignment="Center" />
+
+                <Label
+                    FontFamily="FontAwesomeSolid"
+                    FontSize="18"
+                    HorizontalOptions="Center"
+                    Text="{x:Static f:FontAwesome.ChevronDown}"
+                    TextColor="White"
+                    VerticalTextAlignment="Center" />
+            </StackLayout>
+            <Frame.GestureRecognizers>
+                <TapGestureRecognizer Command="{x:Bind ChangeTeamCommand}" />
+            </Frame.GestureRecognizers>
+        </Frame>
+
+        <CollectionView
             Grid.Row="4"
+            Grid.ColumnSpan="3"
+            Margin="16,0"
+            ItemsLayout="VerticalGrid, 2"
+            ItemsSource="{x:Bind Boards, IsItemsSource=True}">
+            <CollectionView.ItemTemplate>
+                <DataTemplate>
+                    <Frame
+                        Margin="6"
+                        Padding="8"
+                        x:DataType="m:Board"
+                        BackgroundColor="#424242"
+                        BorderColor="#424242"
+                        CornerRadius="4"
+                        HeightRequest="60">
+                        <StackLayout>
+                            <Label
+                                Grid.Column="1"
+                                FontAttributes="Bold"
+                                FontSize="12"
+                                LineBreakMode="TailTruncation"
+                                Text="{x:Bind Name}"
+                                TextColor="White" />
+                        </StackLayout>
+                    </Frame>
+                </DataTemplate>
+            </CollectionView.ItemTemplate>
+
+        </CollectionView>
+
+        <Label
+            Grid.Row="5"
+            Grid.ColumnSpan="2"
+            Margin="16,0,0,0"
+            FontAttributes="Bold"
+            FontSize="20"
+            TextColor="White"
+            VerticalTextAlignment="Center">
+            <Label.FormattedText>
+                <FormattedString>
+                    <Span FontFamily="DevOpsIcons" Text="{x:Static c:Icons.Pipeline}" />
+                    <Span FontFamily="OpenSansSemibold" Text=" My Pipelines" />
+                </FormattedString>
+            </Label.FormattedText>
+        </Label>
+
+        <Grid
+            Grid.Row="6"
             Grid.Column="1"
             Margin="0,32"
             Padding="0"
-            BackgroundColor="#201f1e"
             HeightRequest="64"
             VerticalOptions="End"
             WidthRequest="200">
@@ -164,17 +263,7 @@
                 HorizontalOptions="FillAndExpand"
                 VerticalOptions="FillAndExpand"
                 WidthRequest="64"
-                Color="#0078d4">
-
-                <BoxView.Shadow>
-                    <Shadow
-                        Brush="{DynamicResource Gray400Brush}"
-                        Opacity=".6"
-                        Radius="20"
-                        Offset="6,8" />
-                </BoxView.Shadow>
-
-            </BoxView>
+                Color="#0078d4" />
             <Entry
                 x:Name="fEntry"
                 BackgroundColor="White"

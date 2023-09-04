@@ -9,18 +9,22 @@ public partial class PipelineDetailsPage : BaseContentPage
         InitializeComponent();
     }
 
-    private void ListView_ItemSelected(object sender, SelectedItemChangedEventArgs e)
+    private void VirtualListView_OnSelectedItemsChanged(object sender, SelectedItemsChangedEventArgs e)
     {
-        var item = e.SelectedItem as Record;
-
-        if (sender is ListView listView)
+        if (sender is VirtualListView listView)
         {
+            if (BindingContext is PipelineDetailsPageViewModel vm)
+            {
+                var item = vm.GetRecordAt(listView.SelectedItem?.ItemIndex ?? -1);
+                _ = Task.Run(() =>
+                {
+                    vm.SelectedRecord = item;
+                });
+            }
+
             listView.SelectedItem = null;
-        }
 
-        if (BindingContext is PipelineDetailsPageViewModel vm)
-        {
-            vm.SelectedRecord = item;
+
         }
     }
 }

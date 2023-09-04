@@ -50,6 +50,7 @@
 	  <AndroidResource Include="Platforms\Android\drawable\**" />
     <AndroidResource Include="Platforms\Android\layout\**" />
     <AndroidResource Include="Platforms\Android\mipmap*\**" />
+    <None Remove="pre-release.apk" />
     <AndroidEnvironment Include="Platforms\Android\GarbageCollector.config" />
   </ItemGroup>
   
@@ -61,11 +62,7 @@
 		<PackageReference Include="Mopups" Version="1.1.1" />
 		<PackageReference Include="Polly" Version="7.2.4" />
 		<PackageReference Include="Refit" Version="7.0.0" />
-	</ItemGroup>
-	<ItemGroup>
-	  <MauiXaml Update="Presentation\Views\Pages\TaskLogPage.xaml">
-	    <Generator>MSBuild:Compile</Generator>
-	  </MauiXaml>
-	</ItemGroup>
+    <ProjectReference Include="..\VirtualListView\VirtualListView.csproj" />
+  </ItemGroup>
 
 </Project>

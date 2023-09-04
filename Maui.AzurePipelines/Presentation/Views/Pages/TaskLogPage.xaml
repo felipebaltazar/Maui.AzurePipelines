@@ -5,6 +5,7 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
     xmlns:b="clr-namespace:PipelineApproval.Presentation.Views.Behaviors"
     xmlns:c="clr-namespace:PipelineApproval"
+    xmlns:f="clr-namespace:PipelineApproval.Presentation"
     xmlns:local="clr-namespace:PipelineApproval.Presentation.ViewModels.Pages"
     xmlns:m="clr-namespace:PipelineApproval.Models"
     xmlns:p="clr-namespace:PipelineApproval.Presentation.Views.Pages"
@@ -12,19 +13,50 @@
     x:DataType="local:TaskLogPageViewModel"
     BackgroundColor="#000000"
     NavigationPage.HasNavigationBar="False">
-    <CollectionView Margin="16" ItemsSource="{x:Bind Logs, IsItemsSource=True}">
-        <CollectionView.ItemTemplate>
-            <DataTemplate>
-                <Label
-                    Padding="0,1"
-                    x:DataType="m:TaskLog"
-                    FontAutoScalingEnabled="True"
-                    FontSize="8"
-                    LineBreakMode="TailTruncation"
-                    MaxLines="1"
-                    Text="{x:Bind Text}"
-                    TextColor="{x:Bind TextColor}" />
-            </DataTemplate>
-        </CollectionView.ItemTemplate>
-    </CollectionView>
+    <Grid
+        ColumnDefinitions="48,*,48"
+        ColumnSpacing="0"
+        RowDefinitions="60,*"
+        RowSpacing="0">
+
+
+        <Label
+            FontFamily="FontAwesomeSolid"
+            FontSize="20"
+            HorizontalTextAlignment="Center"
+            Text="{x:Static f:FontAwesome.ChevronLeft}"
+            VerticalTextAlignment="Center">
+            <Label.GestureRecognizers>
+                <TapGestureRecognizer Command="{x:Bind NavigateBackCommand}" />
+            </Label.GestureRecognizers>
+        </Label>
+
+        <Label
+            Grid.Column="1"
+            FontFamily="OpenSansSemibold"
+            FontSize="18"
+            HorizontalTextAlignment="Center"
+            LineBreakMode="TailTruncation"
+            Text="{x:Bind TaskName}"
+            VerticalTextAlignment="Center" />
+
+        <CollectionView
+            Grid.Row="1"
+            Grid.ColumnSpan="3"
+            Margin="16"
+            ItemsSource="{x:Bind Logs, IsItemsSource=True}">
+            <CollectionView.ItemTemplate>
+                <DataTemplate>
+                    <Label
+                        Padding="0,1"
+                        x:DataType="m:TaskLog"
+                        FontAutoScalingEnabled="True"
+                        FontSize="8"
+                        MaxLines="1"
+                        Text="{x:Bind Text}"
+                        TextColor="{x:Bind TextColor}" />
+                </DataTemplate>
+            </CollectionView.ItemTemplate>
+        </CollectionView>
+    </Grid>
 </p:BaseContentPage>
