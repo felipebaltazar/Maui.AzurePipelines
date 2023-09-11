@@ -1,94 +1,147 @@
 trigger:
 - main
 
+name: $(Major).$(Minor).$(Rev).$(Build.BuildId)
 
-jobs:
+stages:
 
-  #Build Android
-  - job: Job_Android
-    displayName: Build Android
-    pool:
-      vmimage: 'windows-latest'
-    steps:
+ - stage: build_android_ios
+   displayName: "Build Android e iOS"
+   jobs:
+    - job: Job_Android
+      displayName: Build Android
+      pool:
+        vmimage: 'windows-latest'
+      steps:
+      - task: UseDotNet@2
+        inputs:
+          packageType: 'sdk'
+          version: '7.x'
 
-    - task: UseDotNet@2
-      inputs:
-        packageType: 'sdk'
-        version: '7.x'
+      - task: Bash@3
+        displayName: Install MAUI
+        inputs:
+          targetType: 'inline'
+          script: |
+            dotnet nuget locals all --clear 
+            cd "Maui.AzurePipelines/"
+            dotnet workload install android --ignore-failed-sources
+            dotnet workload install maui --ignore-failed-sources
 
+      - task: Bash@3
+        displayName: Build Android App
+        inputs:
+          targetType: 'inline'
+          script: |
+            cd "Maui.AzurePipelines/"
+            dotnet publish Maui.AzurePipelines.csproj -f net7.0-android -c Release
 
-    - task: Bash@3
-      displayName: Install MAUI
-      inputs:
-        targetType: 'inline'
-        script: |
-          dotnet nuget locals all --clear 
-          cd "Maui.AzurePipelines/"
-          dotnet workload install android --ignore-failed-sources
-          dotnet workload install maui --ignore-failed-sources
+      - task: CopyFiles@2
+        inputs:
+          Contents: |
+            **/*.aab
+            **/*.apk
+          TargetFolder: '$(Build.ArtifactStagingDirectory)'
+          flattenFolders: true
 
-    - task: Bash@3
-      displayName: Build Android App
-      inputs:
-        targetType: 'inline'
-        script: |
-          cd "Maui.AzurePipelines/"
-          dotnet publish Maui.AzurePipelines.csproj -f net7.0-android -c Release
+      - task: PublishBuildArtifacts@1
+        inputs:
+          PathtoPublish: '$(Build.ArtifactStagingDirectory)'
+          ArtifactName: 'drop_android'
+          publishLocation: 'Container'
 
+    - job: Job_iOS
+      displayName: Build iOS
+      dependsOn: []
+      pool:
+        vmimage: 'macOS-latest'
+        demands:
+        - MSBuild
+      steps:
 
-  #Build IOS
-  - job: Job_iOS
-    displayName: Build iOS
-    dependsOn: []
-    pool:
-      vmimage: 'macOS-latest'
-      demands:
-      - MSBuild
-    steps:
+      - task: UseDotNet@2
+        inputs:
+          packageType: 'sdk'
+          version: '7.x'
 
-    - task: UseDotNet@2
-      inputs:
-        packageType: 'sdk'
-        version: '7.x'
+      - task: InstallAppleCertificate@2
+        inputs:
+          certSecureFile: 'Certificados.p12'
+          certPwd: $(apple_cert_pass)
+          keychain: 'temp'
 
-    - task: InstallAppleCertificate@2
-      inputs:
-        certSecureFile: 'Certificados.p12'
-        certPwd: $(apple_cert_pass)
-        keychain: 'temp'
+      - task: InstallAppleProvisioningProfile@1
+        inputs:
+          provisioningProfileLocation: 'secureFiles'
+          provProfileSecureFile: 'Apple_Distribution_Devops_Approval.mobileprovision'
 
-    - task: InstallAppleProvisioningProfile@1
-      inputs:
-        provisioningProfileLocation: 'secureFiles'
-        provProfileSecureFile: 'Apple_Distribution_Devops_Approval.mobileprovision'
+      - task: Bash@3
+        displayName: Install MAUI
+        inputs:
+          targetType: 'inline'
+          script: |
+            dotnet nuget locals all --clear 
+            cd "Maui.AzurePipelines/"
+            dotnet workload install maui-ios --ignore-failed-sources
+            dotnet workload install maui --ignore-failed-sources
 
-    - task: Bash@3
-      displayName: Install MAUI
-      inputs:
-        targetType: 'inline'
-        script: |
-          dotnet nuget locals all --clear 
-          cd "Maui.AzurePipelines/"
-          dotnet workload install maui-ios --ignore-failed-sources
-          dotnet workload install maui --ignore-failed-sources
+      - task: Bash@3
+        displayName: Build IOS App
+        inputs:
+          targetType: 'inline'
+          script: |
+            cd "Maui.AzurePipelines/"
+            dotnet publish Maui.AzurePipelines.csproj -f net7.0-ios -c Release
 
-    - task: Bash@3
-      displayName: Build IOS App
-      inputs:
-        targetType: 'inline'
-        script: |
-          cd "Maui.AzurePipelines/"
-          dotnet publish Maui.AzurePipelines.csproj -f net7.0-ios -c Release
+      - task: CopyFiles@2
+        inputs:
+          Contents: |
+            **/*.app
+            **/*.ipa
+          TargetFolder: '$(Build.ArtifactStagingDirectory)'
+          flattenFolders: true
 
-    - task: CopyFiles@2
-      inputs:
-        Contents: |
-          **/*.app
-          **/*.ipa
-        TargetFolder: '$(Build.ArtifactStagingDirectory)'
+      - task: PublishBuildArtifacts@1
+        inputs:
+          PathtoPublish: '$(Build.ArtifactStagingDirectory)'
+          ArtifactName: 'drop_ios'
+          publishLocation: 'Container'
 
-    - task: PublishBuildArtifacts@1
-      inputs:
-        PathtoPublish: '$(Build.ArtifactStagingDirectory)'
-        ArtifactName: 'drop_ios'
-        publishLocation: 'Container'
+ - stage: unit_test
+   displayName: "Testes de unidade"
+   dependsOn: []
+   jobs:
+    - job: tags
+      displayName: Tag build
+      pool:
+        vmimage: 'windows-latest'
+      steps:
+      - checkout: none
+
+      - task: Bash@3
+        displayName: Preparing tags
+        inputs: 
+          targetType: 'inline'
+          script: |
+
+            Repo=$(echo 'repo-$(Build.Repository.Name)' | tr '[:upper:]' '[:lower:]' | sed -r 's/[ :_.]+/-/g')
+            echo "##vso[task.setvariable variable=repo]${Repo}"
+
+            Pipe=$(echo 'pipe-$(Build.DefinitionName)' | tr '[:upper:]' '[:lower:]' | sed -r 's/[ :_.]+/-/g')
+            echo "##vso[task.setvariable variable=pipe]${Pipe}"
+
+      - task: Bash@3
+        displayName: Tags criadas
+        inputs: 
+          targetType: 'inline'
+          script: |
+            echo '$(pipe)'
+            echo '$(repo)'
+
+      - task: tagBuildOrRelease@0
+        displayName: 'Associando tags do build'
+        inputs:
+          type: 'Build'
+          tags: |
+            $(pipe)
+            $(repo)
