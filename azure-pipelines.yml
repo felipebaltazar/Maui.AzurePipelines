@@ -130,18 +130,5 @@ stages:
             Pipe=$(echo 'pipe-$(Build.DefinitionName)' | tr '[:upper:]' '[:lower:]' | sed -r 's/[ :_.]+/-/g')
             echo "##vso[task.setvariable variable=pipe]${Pipe}"
 
-      - task: Bash@3
-        displayName: Tags criadas
-        inputs: 
-          targetType: 'inline'
-          script: |
-            echo '$(pipe)'
-            echo '$(repo)'
-
-      - task: tagBuildOrRelease@0
-        displayName: 'Associando tags do build'
-        inputs:
-          type: 'Build'
-          tags: |
-            $(pipe)
-            $(repo)
+            echo "##vso[build.addbuildtag]${Pipe}"
+            echo "##vso[build.addbuildtag]${Repo}"
