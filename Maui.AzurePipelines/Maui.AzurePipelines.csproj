@@ -31,8 +31,10 @@
   
 	<PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|net7.0-ios|AnyCPU'">
 	  <CreatePackage>false</CreatePackage>
+    <ArchiveOnBuild>true</ArchiveOnBuild>
 	  <CodesignKey>Apple Distribution: Felipe Baltazar (2L36GLR2GS)</CodesignKey>
 	  <CodesignProvision>Apple Distribution Devops Approval</CodesignProvision>
+    <RuntimeIdentifier>ios-arm64</RuntimeIdentifier>
 	</PropertyGroup>
   
 	<ItemGroup>
