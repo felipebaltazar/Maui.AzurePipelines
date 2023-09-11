@@ -32,7 +32,7 @@ jobs:
         targetType: 'inline'
         script: |
           cd "Maui.AzurePipelines/"
-          dotnet publish FiveHigh.Events.csproj -f net7.0-android -c Release
+          dotnet publish Maui.AzurePipelines.csproj -f net7.0-android -c Release
 
 
   #Build IOS
