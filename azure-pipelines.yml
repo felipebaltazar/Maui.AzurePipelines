@@ -14,7 +14,7 @@ jobs:
     - task: UseDotNet@2
       inputs:
         packageType: 'sdk'
-        version: '7.x.x'
+        version: '7.x'
 
 
     - task: Bash@3
@@ -46,7 +46,7 @@ jobs:
     - task: UseDotNet@2
       inputs:
         packageType: 'sdk'
-        version: '7.x.x'
+        version: '7.x'
 
     - task: Bash@3
       displayName: Install MAUI
