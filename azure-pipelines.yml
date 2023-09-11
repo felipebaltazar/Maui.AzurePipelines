@@ -76,4 +76,4 @@ jobs:
         targetType: 'inline'
         script: |
           cd "Maui.AzurePipelines/"
-          dotnet publish Maui.AzurePipelines.csproj -f net7.0-ios -c Release -r ios-arm64 --no-self-contained
+          dotnet publish Maui.AzurePipelines.csproj -f net7.0-ios -c Release -r ios-arm64 --no-self-contained -p:ArchiveOnBuild=true
