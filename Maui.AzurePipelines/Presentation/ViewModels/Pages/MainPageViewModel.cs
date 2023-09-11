@@ -4,10 +4,6 @@ using PipelineApproval.Abstractions.Views;
 using PipelineApproval.Infrastructure.Commands;
 using PipelineApproval.Infrastructure.Extensions;
 using PipelineApproval.Models;
-using System.Net.Http.Headers;
-using System.Net.Http.Json;
-using System.Security.Cryptography;
-using System.Text;
 using System.Text.Json;
 using System.Web;
 using Constants = PipelineApproval.Infrastructure.Constants;
@@ -173,6 +169,7 @@ public class MainPageViewModel : BaseViewModel, IInitializeAware
         }
         finally
         {
+            Url = string.Empty;
             IsBusy = false;
         }
     }
