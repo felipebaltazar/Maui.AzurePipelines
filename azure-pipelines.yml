@@ -24,7 +24,8 @@ jobs:
         script: |
           dotnet nuget locals all --clear 
           cd "Maui.AzurePipelines/"
-          dotnet workload install maui-android
+          dotnet workload install android --ignore-failed-sources
+          dotnet workload install maui --ignore-failed-sources
 
     - task: Bash@3
       displayName: Build Android App
@@ -55,7 +56,8 @@ jobs:
         script: |
           dotnet nuget locals all --clear 
           cd "Maui.AzurePipelines/"
-          dotnet workload install maui-ios
+          dotnet workload install maui-ios --ignore-failed-sources
+          dotnet workload install maui --ignore-failed-sources
 
     - task: Bash@3
       displayName: Build IOS App
