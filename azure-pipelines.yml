@@ -42,6 +42,8 @@ jobs:
     dependsOn: []
     pool:
       vmimage: 'macOS-latest'
+      demands:
+      - MSBuild
     steps:
 
     - task: UseDotNet@2
@@ -76,4 +78,17 @@ jobs:
         targetType: 'inline'
         script: |
           cd "Maui.AzurePipelines/"
-          dotnet publish Maui.AzurePipelines.csproj -f net7.0-ios -c Release -r ios-arm64 --no-self-contained -p:ArchiveOnBuild=true
+          dotnet publish Maui.AzurePipelines.csproj -f net7.0-ios -c Release
+
+    - task: CopyFiles@2
+      inputs:
+        Contents: |
+          **/*.app
+          **/*.ipa
+        TargetFolder: '$(Build.ArtifactStagingDirectory)'
+
+    - task: PublishBuildArtifacts@1
+      inputs:
+        PathtoPublish: '$(Build.ArtifactStagingDirectory)'
+        ArtifactName: 'drop_ios'
+        publishLocation: 'Container'
