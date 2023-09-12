@@ -30,6 +30,8 @@ public static class Constants
 
         public const string VISUALSTUDIO_API = "https://app.vssps.visualstudio.com";
 
+        public const string VSAEX_API = "https://vsaex.dev.azure.com";
+
         public const string AZURE_API = "https://dev.azure.com";
     }
 }

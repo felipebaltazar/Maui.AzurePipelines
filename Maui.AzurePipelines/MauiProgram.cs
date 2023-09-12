@@ -45,6 +45,7 @@ public static class MauiProgram
     {
         sCollection.AddScoped<IAlertPopup, AlertPopup>();
         sCollection.AddScoped<ISelectTeamPopup, SelectTeamPopup>();
+        sCollection.AddScoped<IOrganizationLoginPopup, OrganizationLoginPopup>();
         sCollection.AddScoped<ISelectOrganizationPopup, SelectOrganizationPopup>();
     }
 

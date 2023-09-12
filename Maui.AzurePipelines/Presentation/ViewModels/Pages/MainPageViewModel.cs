@@ -12,6 +12,7 @@ namespace PipelineApproval.Presentation.ViewModels.Pages;
 
 public class MainPageViewModel : BaseViewModel, IInitializeAware
 {
+    private readonly ISecureStorageService _secureStorageService;
     private readonly IPreferencesService _preferencesService;
     private readonly IAzureService _azureService;
 
@@ -83,9 +84,13 @@ public class MainPageViewModel : BaseViewModel, IInitializeAware
     public IAsyncCommand ChangeTeamCommand =>
         new AsyncCommand(ChangeTeamCommandExecuteAsync);
 
+    public IAsyncCommand LogoutCommand =>
+        new AsyncCommand(LogoutCommandExecuteAsync);
+
     public MainPageViewModel(
         ILazyDependency<INavigationService> navigationService,
         ILazyDependency<ILoaderService> loaderService,
+        ISecureStorageService secureStorageService,
         IPreferencesService preferencesService,
         IMainThreadService mainThreadService,
         IAzureService azureService,
@@ -96,6 +101,7 @@ public class MainPageViewModel : BaseViewModel, IInitializeAware
             mainThreadService,
             logger)
     {
+        _secureStorageService = secureStorageService;
         _preferencesService = preferencesService;
         _azureService = azureService;
     }
@@ -202,6 +208,15 @@ public class MainPageViewModel : BaseViewModel, IInitializeAware
                 _ = Task.Run(LoadBoardsAsync);
             };
         }).ConfigureAwait(false);
+    }
+
+    private async Task LogoutCommandExecuteAsync()
+    {
+        _preferencesService.Set(SelectedOrganization.accountName + "_SelectedTeam", 0)
+                           .Set("SelectedOrganization", 0);
+
+        await _secureStorageService.SetAsync(Constants.Storage.PAT_TOKEN_KEY, string.Empty).ConfigureAwait(false);
+        await NavigationService.NavigateToAsync("LoginPage").ConfigureAwait(false);
     }
 
     private Task NavigateToProjectCommandExecuteAsync(Project project)

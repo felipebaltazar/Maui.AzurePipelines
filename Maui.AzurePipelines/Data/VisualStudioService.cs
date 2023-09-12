@@ -11,6 +11,7 @@ public class VisualStudioService : BaseMicrosoftService, IVisualStudioService
     #region Fields
 
     private readonly IVisualStudioApi _visualStudioApi;
+    private readonly IVsaexApi _vsaexApi;
     private readonly ILogger _logger;
 
     private AccountInfo _accountInfo;
@@ -21,9 +22,11 @@ public class VisualStudioService : BaseMicrosoftService, IVisualStudioService
 
     public VisualStudioService(
         IVisualStudioApi visualStudioApi,
+        IVsaexApi vsaexApi,
         ILogger logger)
     {
         _visualStudioApi = visualStudioApi;
+        _vsaexApi = vsaexApi;
         _logger = logger;
     }
 
@@ -65,6 +68,28 @@ public class VisualStudioService : BaseMicrosoftService, IVisualStudioService
         catch (Exception ex)
         {
             _logger.LogError("Erro ao buscar organizações", ex);
+        }
+
+        return null;
+    }
+
+    public async Task<UserEntitlementsReponseApi> GetEntitlementsAsync(string pat, string organization)
+    {
+        try
+        {
+            var credentials = FormatToken(pat);
+
+            var result = await RequestWithRetryPolicy(() =>
+                _vsaexApi.GetEntitlementsAsync(credentials, organization)).ConfigureAwait(false);
+
+            if(result != null)
+                await SecureStorage.SetAsync(Constants.Storage.PAT_TOKEN_KEY, pat).ConfigureAwait(false);
+
+            return result;
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError("Erro ao buscar entitlements", ex);
         }
 
         return null;

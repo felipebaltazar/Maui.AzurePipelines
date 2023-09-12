@@ -4,6 +4,7 @@ using PipelineApproval.Abstractions.Views;
 using PipelineApproval.Infrastructure;
 using PipelineApproval.Infrastructure.Commands;
 using PipelineApproval.Infrastructure.Extensions;
+using PipelineApproval.Models;
 
 namespace PipelineApproval.Presentation.ViewModels.Pages;
 
@@ -43,6 +44,9 @@ public class LoginPageViewModel : BaseViewModel, INavigationAware
 
     public IAsyncCommand GithubrepositoryCommand =>
         new AsyncCommand(GithubrepositoryCommandExecuteAsync);
+
+    public IAsyncCommand<string> OrganizationSelectedCommand =>
+        new AsyncCommand<string>((o) => ExecuteBusyActionOnNewTaskAsync(() => OrganizationSelectedCommandExecuteAsync(o)));
 
     #endregion
 
@@ -125,11 +129,19 @@ public class LoginPageViewModel : BaseViewModel, INavigationAware
             if (isValid)
             {
                 var apiResponse = await _visualStudioService.GetOrganizationsAsync().ConfigureAwait(false);
-                var navParameters = apiResponse.ToNavigationParameters(Constants.Navigation.ACCOUNT_PARAMETER);
+                await GoToHomePageAsync(apiResponse).ConfigureAwait(false);
 
-                _preferencesService.Set(Constants.Storage.USER_ORGANIZATIONS, navParameters[Constants.Navigation.ACCOUNT_PARAMETER]);
-                await NavigationService.NavigateToAsync("MainPage", navParameters).ConfigureAwait(false);
+                return;
+            }
+            else
+            {
+                Logger.LogInformation("Pat with organization restrictions, starting manual process");
+                void setup(IOrganizationLoginPopup p)
+                {
+                    p.OnResultCommand = OrganizationSelectedCommand;
+                }
 
+                await NavigationService.PushPopupAsync<IOrganizationLoginPopup>(setup).ConfigureAwait(false);
                 return;
             }
         }
@@ -157,6 +169,65 @@ public class LoginPageViewModel : BaseViewModel, INavigationAware
     {
         var uri = new Uri(Constants.Url.GITHUB_REPOSIOTRY);
         return _browserService.OpenAsync(uri);
+    }
+
+    private async Task OrganizationSelectedCommandExecuteAsync(string organization)
+    {
+        try
+        {
+            if (string.IsNullOrWhiteSpace(organization))
+            {
+                await NavigationService.PushPopupAsync<IAlertPopup>(p =>
+                {
+                    p.MessageTitle = "Erro de autenticação";
+                    p.Message = "O nome da organização não pode ser vazio!";
+                    p.CancelButton = "Ok";
+                }).ConfigureAwait(false);
+
+                return;
+            }
+
+            var result = await _visualStudioService.GetEntitlementsAsync(PAT, organization)
+                                                   .ConfigureAwait(false);
+
+            if (result?.Members?.Any() ?? false)
+            {
+                var accountInfo = new AccountResponseApi()
+                {
+                    count = 1,
+                    value = new[]
+                    {
+                        new AccountInfo()
+                        {
+                            id = result.Members[0].Id,
+                            accountName = organization
+                        }
+                    }
+                };
+
+                await GoToHomePageAsync(accountInfo).ConfigureAwait(false);
+                return;
+            }
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Não foi possível efetuar login");
+        }
+
+        await NavigationService.PushPopupAsync<IAlertPopup>(p =>
+        {
+            p.MessageTitle = "Erro de autenticação";
+            p.Message = "Não foi possível autenticar, verifique se o 'Personal Access Token' é valido ou se a organização selecionada está correta.";
+            p.CancelButton = "Ok";
+        }).ConfigureAwait(false);
+    }
+
+    private async Task GoToHomePageAsync(AccountResponseApi apiResponse)
+    {
+        var navParameters = apiResponse.ToNavigationParameters(Constants.Navigation.ACCOUNT_PARAMETER);
+
+        _preferencesService.Set(Constants.Storage.USER_ORGANIZATIONS, navParameters[Constants.Navigation.ACCOUNT_PARAMETER]);
+        await NavigationService.NavigateToAsync("MainPage", navParameters).ConfigureAwait(false);
     }
 
     #endregion

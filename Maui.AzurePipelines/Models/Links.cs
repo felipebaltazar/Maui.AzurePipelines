@@ -11,4 +11,7 @@ public class _Links
     public Timeline timeline { get; set; }
     public Badge badge { get; set; }
     public Avatar avatar { get; set; }
+    public Self memberships { get; set; }
+    public Self membershipState { get; set; }
+    public Self storageKey { get; set; }
 }

@@ -74,7 +74,7 @@ public class Record : ObservableObject
         {
             return Icons.Cancelled;
         }
-        else if (state == "completed")
+        else if (result == "succeeded")
         {
             return Icons.Success;
         }
@@ -96,7 +96,7 @@ public class Record : ObservableObject
         {
             return Color.FromArgb("#cd4a45");
         }
-        else if (state == "completed")
+        else if (result == "succeeded")
         {
             return Color.FromArgb("#55a362");
         }
