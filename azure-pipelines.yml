@@ -46,7 +46,14 @@ stages:
           targetType: 'inline'
           script: |
             cd "Maui.AzurePipelines/"
-            dotnet publish Maui.AzurePipelines.csproj -f net7.0-android -c Release
+            dotnet publish  -f  -c Release
+
+      - task: CmdLine@2
+        displayName: 'Build Android App'
+        inputs:
+          script: |
+            cd "Maui.AzurePipelines/"
+            dotnet publish Maui.AzurePipelines.csproj -f net7.0-android -c Release /p:ApplicationDisplayVersion=$(Major).$(Minor).$(Rev) /p:ApplicationVersion=$(Build.BuildId) /p:AndroidSigningKeyPass=$(keystore-password) /p:AndroidSigningStorePass=$(keystore-password) /p:AndroidSigningKeyStore=$(System.DefaultWorkingDirectory)\\$(keystore-filename) /p:AndroidSigningKeyAlias=$(keystore-alias) /p:AndroidKeyStore=true
 
       - task: CopyFiles@2
         inputs:
