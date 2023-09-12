@@ -30,6 +30,13 @@ stages:
           mv $(keystore.secureFilePath) $(System.DefaultWorkingDirectory)
         displayName: Move Keystore to Working Directory
 
+      - task: JavaToolInstaller@0
+        displayName: Install Java SDK
+        inputs:
+          versionSpec: '11'
+          jdkArchitectureOption: 'x64'
+          jdkSourceOption: 'PreInstalled'
+
       - task: Bash@3
         displayName: Install MAUI
         inputs:
