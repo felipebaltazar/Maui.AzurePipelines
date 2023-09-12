@@ -18,6 +18,18 @@ stages:
           packageType: 'sdk'
           version: '7.x'
 
+      - task: DownloadSecureFile@1
+        name: keystore
+        displayName: Download keystore 
+        inputs:
+          secureFile: '$(keystore-filename)'
+
+      - script: |
+          echo Downloaded $(keystore.secureFilePath)
+          echo Working Directory $(System.DefaultWorkingDirectory)\\$(keystore-filename)
+          mv $(keystore.secureFilePath) $(System.DefaultWorkingDirectory)
+        displayName: Move Keystore to Working Directory
+
       - task: Bash@3
         displayName: Install MAUI
         inputs:
@@ -34,7 +46,7 @@ stages:
           targetType: 'inline'
           script: |
             cd "Maui.AzurePipelines/"
-            dotnet publish Maui.AzurePipelines.csproj -f net7.0-android -c Release
+            dotnet publish Maui.AzurePipelines.csproj -f net7.0-android -c Release /p:ApplicationDisplayVersion=$(Major).$(Minor).$(Rev) /p:ApplicationVersion=$(Build.BuildId) /p:AndroidSigningKeyPass=$(key-password) /p:AndroidSigningStorePass=$(keystore-password) /p:AndroidSigningKeyStore=$(System.DefaultWorkingDirectory)\\$(keystore-filename) /p:AndroidSigningKeyAlias=$(keystore-alias) /p:AndroidKeyStore=true
 
       - task: CopyFiles@2
         inputs:
@@ -91,7 +103,7 @@ stages:
           targetType: 'inline'
           script: |
             cd "Maui.AzurePipelines/"
-            dotnet publish Maui.AzurePipelines.csproj -f net7.0-ios -c Release
+            dotnet publish Maui.AzurePipelines.csproj -f net7.0-ios -c Release /p:ApplicationDisplayVersion=$(Major).$(Minor).$(Rev) /p:ApplicationVersion=$(Build.BuildId)
 
       - task: CopyFiles@2
         inputs:
