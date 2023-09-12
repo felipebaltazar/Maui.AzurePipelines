@@ -40,14 +40,6 @@ stages:
             dotnet workload install android --ignore-failed-sources
             dotnet workload install maui --ignore-failed-sources
 
-      - task: Bash@3
-        displayName: Build Android App
-        inputs:
-          targetType: 'inline'
-          script: |
-            cd "Maui.AzurePipelines/"
-            dotnet publish  -f  -c Release
-
       - task: CmdLine@2
         displayName: 'Build Android App'
         inputs:
