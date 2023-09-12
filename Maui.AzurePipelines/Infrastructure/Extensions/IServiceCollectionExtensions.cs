@@ -28,6 +28,7 @@ public static class IServiceCollectionExtensions
     {
         serviceCollection.AddScoped<IStartPage, TPage>();
         serviceCollection.AddScoped<TViewModel>();
+        serviceCollection.AddScoped<TPage>();
 
         return serviceCollection;
     }
@@ -43,6 +44,9 @@ public static class IServiceCollectionExtensions
 
         serviceCollection.AddSingleton((s) =>
             BuildWithFactory<IVisualStudioApi>(s, VISUALSTUDIO_API));
+
+        serviceCollection.AddSingleton((s) =>
+            BuildWithFactory<IVsaexApi>(s, VSAEX_API));
 
         return serviceCollection;
     }

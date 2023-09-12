@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<Mopups:PopupPage
+    x:Class="PipelineApproval.Presentation.Views.Controls.OrganizationLoginPopup"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:Animations="clr-namespace:Mopups.Animations;assembly=Mopups"
+    xmlns:Mopups="clr-namespace:Mopups.Pages;assembly=Mopups"
+    BackgroundColor="{DynamicResource Overlay_Background}"
+    BackgroundInputTransparent="False"
+    CloseWhenBackgroundIsClicked="false"
+    HasSystemPadding="False">
+    <Mopups:PopupPage.Animation>
+        <Animations:MoveAnimation PositionIn="Bottom" PositionOut="Bottom" />
+    </Mopups:PopupPage.Animation>
+    <Frame
+        BackgroundColor="{DynamicResource System_Background_Primary}"
+        BorderColor="White"
+        CornerRadius="6"
+        HasShadow="False"
+        HeightRequest="250"
+        VerticalOptions="Center">
+        <StackLayout Orientation="Vertical" Spacing="8">
+            <Label
+                x:Name="titleLabel"
+                FontSize="16"
+                Text="Alert"
+                TextColor="White" />
+
+            <Label Text="Informe a organização" TextColor="White" />
+
+            <Entry
+                x:Name="organizationField"
+                FontFamily="OpenSansSemibold"
+                FontSize="16"
+                HeightRequest="80"
+                HorizontalTextAlignment="Center"
+                Placeholder="(Organization)"
+                PlaceholderColor="LightGray"
+                TextColor="White"
+                VerticalOptions="Center" />
+
+            <Button
+                x:Name="confirmBtb"
+                BackgroundColor="#0078d4"
+                Clicked="confirmBtb_Clicked"
+                CornerRadius="0"
+                HeightRequest="48"
+                HorizontalOptions="Center"
+                Text="Confirmar"
+                TextColor="White"
+                VerticalOptions="Center" />
+        </StackLayout>
+    </Frame>
+</Mopups:PopupPage>
