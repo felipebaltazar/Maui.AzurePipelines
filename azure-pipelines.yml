@@ -35,6 +35,10 @@ stages:
           echo Downloaded $(keystore.secureFilePath)
           echo Working Directory $(Build.Repository.LocalPath)\Maui.AzurePipelines\Maui.AzurePipelines\$(keystore-filename)
           mv $(keystore.secureFilePath) $(Build.Repository.LocalPath)\Maui.AzurePipelines\Maui.AzurePipelines
+          cd $(Build.Repository.LocalPath)\Maui.AzurePipelines
+          dir
+          cd $(Build.Repository.LocalPath)\Maui.AzurePipelines\Maui.AzurePipelines
+          dir
         displayName: Move Keystore to Working Directory
 
       - task: Bash@3
@@ -43,7 +47,9 @@ stages:
           targetType: 'inline'
           script: |
             dotnet nuget locals all --clear 
+            dir
             cd "Maui.AzurePipelines/"
+            dir
             dotnet workload restore
 
       - task: CmdLine@2
@@ -51,7 +57,6 @@ stages:
         inputs:
           script: |
             cd "Maui.AzurePipelines/"
-            dir
             dotnet publish Maui.AzurePipelines.csproj -f net7.0-android -c Release /p:ApplicationDisplayVersion=$(Major).$(Minor).$(Rev) /p:ApplicationVersion=$(Build.BuildId) /p:AndroidSigningKeyPass=$(keystore-password) /p:AndroidSigningStorePass=$(keystore-password) /p:AndroidSigningKeyAlias=$(keystore-alias)
 
       - task: CopyFiles@2
