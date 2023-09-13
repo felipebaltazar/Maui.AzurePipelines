@@ -25,17 +25,10 @@ stages:
           secureFile: '$(keystore-filename)'
 
       - script: |
-          echo Downloaded $(keystore.secureFilePath)
-          echo Working Directory $(System.DefaultWorkingDirectory)\\$(keystore-filename)
-          mv $(keystore.secureFilePath) $(System.DefaultWorkingDirectory)
+          echo Downloaded $(keystore.secureFilePath)\\$(keystore-filename)
+          echo Working Directory $(Build.Repository.LocalPath)\\Maui.AzurePipelines\\$(keystore-filename)
+          mv $(keystore.secureFilePath) $(Build.Repository.LocalPath)\\Maui.AzurePipelines
         displayName: Move Keystore to Working Directory
-
-      - task: JavaToolInstaller@0
-        displayName: Install Java SDK
-        inputs:
-          versionSpec: '11'
-          jdkArchitectureOption: 'x64'
-          jdkSourceOption: 'PreInstalled'
 
       - task: Bash@3
         displayName: Install MAUI
@@ -52,7 +45,7 @@ stages:
         inputs:
           script: |
             cd "Maui.AzurePipelines/"
-            dotnet publish Maui.AzurePipelines.csproj -f net7.0-android -c Release /p:ApplicationDisplayVersion=$(Major).$(Minor).$(Rev) /p:ApplicationVersion=$(Build.BuildId) /p:AndroidSigningKeyPass=$(keystore-password) /p:AndroidSigningStorePass=$(keystore-password) /p:AndroidSigningKeyStore=$(System.DefaultWorkingDirectory)\\$(keystore-filename) /p:AndroidSigningKeyAlias=$(keystore-alias) /p:AndroidKeyStore=true
+            dotnet publish Maui.AzurePipelines.csproj -f net7.0-android -c Release /p:ApplicationDisplayVersion=$(Major).$(Minor).$(Rev) /p:ApplicationVersion=$(Build.BuildId) /p:AndroidSigningKeyPass=$(keystore-password) /p:AndroidSigningStorePass=$(keystore-password) /p:AndroidSigningKeyAlias=$(keystore-alias)
 
       - task: CopyFiles@2
         inputs:
