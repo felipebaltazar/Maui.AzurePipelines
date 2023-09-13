@@ -33,11 +33,11 @@ stages:
 
       - script: |
           echo Downloaded $(keystore.secureFilePath)
-          echo Working Directory $(Build.Repository.LocalPath)\Maui.AzurePipelines\Maui.AzurePipelines\$(keystore-filename)
-          mv $(keystore.secureFilePath) $(Build.Repository.LocalPath)\Maui.AzurePipelines\Maui.AzurePipelines
+          echo Working Directory $(Build.Repository.LocalPath)\Maui.AzurePipelines\$(keystore-filename)
+          mv $(keystore.secureFilePath) $(Build.Repository.LocalPath)\Maui.AzurePipelines
           cd $(Build.Repository.LocalPath)\Maui.AzurePipelines
           dir
-          cd $(Build.Repository.LocalPath)\Maui.AzurePipelines\Maui.AzurePipelines
+          cd Maui.AzurePipelines/
           dir
         displayName: Move Keystore to Working Directory
 
