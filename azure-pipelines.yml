@@ -18,10 +18,12 @@ stages:
           packageType: 'sdk'
           version: '7.x'
 
-      - task: DotNetCoreCLI@2
+      - task: Bash@3
+        displayName: List installed workloads
         inputs:
-          command: 'custom'
-          custom: 'workload list'
+          targetType: 'inline'
+          script: |
+            dotnet workload list
 
       - task: DownloadSecureFile@1
         name: keystore
