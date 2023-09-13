@@ -4,24 +4,19 @@ Utilitários para Azure Pipelines feito em MAUI
 
 ## Utilização
 
-https://learn.microsoft.com/en-us/azure/devops/organizations/accounts/use-personal-access-tokens-to-authenticate?view=azure-devops&tabs=Windows
+[Acesse a documentação da microsoft para criação do "Personal Access Token"](https://learn.microsoft.com/en-us/azure/devops/organizations/accounts/use-personal-access-tokens-to-authenticate?view=azure-devops&tabs=Windows)
 
-No AzureDevops navegue até Personal Access Token
 
-![image](https://github.com/felipebaltazar/Maui.AzurePipelines/assets/19656249/26103459-383d-440b-952b-c02162ffbbe6)
+<p align="center">
+	<kbd>
+		<img src="https://github.com/felipebaltazar/Maui.AzurePipelines/assets/19656249/9bd62fa0-10aa-43b9-86dc-9314d6298c8d" alt="home page" width=45% />
+      <img src="https://github.com/felipebaltazar/Maui.AzurePipelines/assets/19656249/cccd54a4-419e-4db5-979f-12ce2cecb844" alt="pipeline list" width=45% />
+	</kbd>
+</p>
 
-Clique em adicionar
-
-![image](https://github.com/felipebaltazar/Maui.AzurePipelines/assets/19656249/8ecd88d0-7bf8-49f5-acd3-5b5064b196c2)
-
-Selecione a data de expiração conforme o necessário
-
-![image](https://github.com/felipebaltazar/Maui.AzurePipelines/assets/19656249/301e7f3d-5b1d-4e47-9b85-2dc3a529c317)
-
-Copie o token
-
-![image](https://github.com/felipebaltazar/Maui.AzurePipelines/assets/19656249/cfcf365d-a38d-4207-9ffd-f4d09d2dc402)
-
-Abra o aplicativo e inclua no campo "(Personal AccessToken)"
-E inclua a URL do build que você quer aprovar
-![image](https://github.com/felipebaltazar/Maui.AzurePipelines/assets/19656249/65ceae26-96bc-458f-a0ca-eff21aab5811)
+<p align="center">
+	<kbd>
+		<img src="https://github.com/felipebaltazar/Maui.AzurePipelines/assets/19656249/0affc3d4-06fc-4d61-ba1e-36eba743fd2d" alt="pipeline details" width=45% />
+		<img src="https://github.com/felipebaltazar/Maui.AzurePipelines/assets/19656249/2f533912-4a3c-4fac-99e3-0e42c5811573" alt="logs details" width=45% />
+	</kbd>
+</p>
