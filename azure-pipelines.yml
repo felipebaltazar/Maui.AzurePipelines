@@ -11,7 +11,7 @@ stages:
     - job: Job_Android
       displayName: Build Android
       pool:
-        vmimage: 'windows-2022'
+        vmimage: 'windows-latest'
       steps:
       - task: UseDotNet@2
         inputs:
@@ -45,14 +45,13 @@ stages:
             dotnet nuget locals all --clear 
             cd "Maui.AzurePipelines/"
             dotnet workload restore
-           #dotnet workload install android --ignore-failed-sources
-           # dotnet workload install maui --ignore-failed-sources
 
       - task: CmdLine@2
         displayName: 'Build Android App'
         inputs:
           script: |
             cd "Maui.AzurePipelines/"
+            dir
             dotnet publish Maui.AzurePipelines.csproj -f net7.0-android -c Release /p:ApplicationDisplayVersion=$(Major).$(Minor).$(Rev) /p:ApplicationVersion=$(Build.BuildId) /p:AndroidSigningKeyPass=$(keystore-password) /p:AndroidSigningStorePass=$(keystore-password) /p:AndroidSigningKeyAlias=$(keystore-alias)
 
       - task: CopyFiles@2
@@ -101,8 +100,7 @@ stages:
           script: |
             dotnet nuget locals all --clear 
             cd "Maui.AzurePipelines/"
-            dotnet workload install maui-ios --ignore-failed-sources
-            dotnet workload install maui --ignore-failed-sources
+            dotnet workload restore
 
       - task: Bash@3
         displayName: Build IOS App
