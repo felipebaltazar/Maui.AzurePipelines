@@ -11,12 +11,17 @@ stages:
     - job: Job_Android
       displayName: Build Android
       pool:
-        vmimage: 'windows-latest'
+        vmimage: 'windows-2022'
       steps:
       - task: UseDotNet@2
         inputs:
           packageType: 'sdk'
           version: '7.x'
+
+      - task: DotNetCoreCLI@2
+        inputs:
+          command: 'custom'
+          custom: 'workload list'
 
       - task: DownloadSecureFile@1
         name: keystore
@@ -37,8 +42,8 @@ stages:
           script: |
             dotnet nuget locals all --clear 
             cd "Maui.AzurePipelines/"
-            dotnet workload install android --ignore-failed-sources
-            dotnet workload install maui --ignore-failed-sources
+           #dotnet workload install android --ignore-failed-sources
+           # dotnet workload install maui --ignore-failed-sources
 
       - task: CmdLine@2
         displayName: 'Build Android App'
