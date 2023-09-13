@@ -35,10 +35,6 @@ stages:
           echo Downloaded $(keystore.secureFilePath)
           echo Working Directory $(Build.Repository.LocalPath)\Maui.AzurePipelines\$(keystore-filename)
           mv $(keystore.secureFilePath) $(Build.Repository.LocalPath)\Maui.AzurePipelines
-          cd $(Build.Repository.LocalPath)\Maui.AzurePipelines
-          dir
-          cd Maui.AzurePipelines/
-          dir
         displayName: Move Keystore to Working Directory
 
       - task: Bash@3
@@ -47,9 +43,7 @@ stages:
           targetType: 'inline'
           script: |
             dotnet nuget locals all --clear 
-            dir
             cd "Maui.AzurePipelines/"
-            dir
             dotnet workload restore
 
       - task: CmdLine@2
