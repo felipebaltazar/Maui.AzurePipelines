@@ -1,6 +1,17 @@
 trigger:
 - main
 
+parameters:
+- name: PublishStore
+  displayName: Publicar nas lojas
+  type: boolean
+  default: false
+
+- name: dotnetVersion
+  displayName: Versão do .Net
+  type: string
+  default: 7.x
+
 name: $(Major).$(Minor).$(Rev).$(Build.BuildId)
 
 stages:
@@ -16,14 +27,7 @@ stages:
       - task: UseDotNet@2
         inputs:
           packageType: 'sdk'
-          version: '7.x'
-
-      - task: Bash@3
-        displayName: List installed workloads
-        inputs:
-          targetType: 'inline'
-          script: |
-            dotnet workload list
+          version: ${{ parameters.dotnetVersion }}
 
       - task: DownloadSecureFile@1
         name: keystore
@@ -35,10 +39,10 @@ stages:
           echo Downloaded $(keystore.secureFilePath)
           echo Working Directory $(Build.Repository.LocalPath)\Maui.AzurePipelines\$(keystore-filename)
           mv $(keystore.secureFilePath) $(Build.Repository.LocalPath)\Maui.AzurePipelines
-        displayName: Move Keystore to Working Directory
+        displayName: Movendo Keystore para diretorio de trabalho
 
       - task: Bash@3
-        displayName: Install MAUI
+        displayName: Instalando MAUI
         inputs:
           targetType: 'inline'
           script: |
@@ -47,13 +51,14 @@ stages:
             dotnet workload restore
 
       - task: CmdLine@2
-        displayName: 'Build Android App'
+        displayName: 'Compilando Android App'
         inputs:
           script: |
             cd "Maui.AzurePipelines/"
             dotnet publish Maui.AzurePipelines.csproj -f net7.0-android -c Release /p:ApplicationDisplayVersion=$(Major).$(Minor).$(Rev) /p:ApplicationVersion=$(Build.BuildId) /p:AndroidSigningKeyPass=$(keystore-password) /p:AndroidSigningStorePass=$(keystore-password) /p:AndroidSigningKeyAlias=$(keystore-alias)
 
       - task: CopyFiles@2
+        displayName: Copiando para o diretorio de artifacts
         inputs:
           Contents: |
             **/*.aab
@@ -62,10 +67,21 @@ stages:
           flattenFolders: true
 
       - task: PublishBuildArtifacts@1
+        displayName: Liberando nos artifacts
         inputs:
           PathtoPublish: '$(Build.ArtifactStagingDirectory)'
           ArtifactName: 'drop_android'
           publishLocation: 'Container'
+
+      - ${{ if contains(parameters.PublishStore, true) }}:
+        - task: GooglePlayRelease@4
+          displayName: Publicando no teste interno
+          inputs:
+            serviceConnection: 'FiveHighGooglePlay'
+            applicationId: 'com.maui.azurepipeline.approval'
+            action: 'SingleBundle'
+            bundleFile: '**/*.aab'
+            track: 'internal'
 
     - job: Job_iOS
       displayName: Build iOS
@@ -79,7 +95,7 @@ stages:
       - task: UseDotNet@2
         inputs:
           packageType: 'sdk'
-          version: '7.x'
+          version:  ${{ parameters.dotnetVersion }}
 
       - task: InstallAppleCertificate@2
         inputs:
