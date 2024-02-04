@@ -224,8 +224,14 @@
             Grid.Row="4"
             Grid.ColumnSpan="3"
             Margin="16,0"
-            ItemsLayout="VerticalGrid, 2"
             ItemsSource="{x:Bind Boards, IsItemsSource=True}">
+            <CollectionView.ItemsLayout>
+                <GridItemsLayout
+                    HorizontalItemSpacing="{OnPlatform iOS=16}"
+                    Orientation="Vertical"
+                    Span="2"
+                    VerticalItemSpacing="{OnPlatform iOS=16}" />
+            </CollectionView.ItemsLayout>
             <CollectionView.ItemTemplate>
                 <DataTemplate>
                     <Frame
