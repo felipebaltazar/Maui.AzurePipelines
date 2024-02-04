@@ -51,6 +51,7 @@ stages:
             dotnet workload restore
 
       - task: JavaToolInstaller@0
+        displayName: Instalando JDK
         inputs:
           versionSpec: '11'
           jdkArchitectureOption: 'x64'
