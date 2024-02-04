@@ -80,6 +80,36 @@ stages:
           ArtifactName: 'drop_android'
           publishLocation: 'Container'
 
+      - task: ado-discord-webhook@2
+        displayName: 'Notificação no discord para falha de build'
+        condition: failed()
+        inputs:
+          webhookId: '$(discord_webhookId)'
+          webhookKey: '$(discord_webhookKey)'
+          content: '<@&$(discord_mentionRoleId)>'
+          embeds: |
+            [
+              {
+                "type": "rich",
+                "title": "$(Build.DefinitionName) ($(Build.BuildNumber))",
+                "description": "Build android failed!",
+                "color": 0xff0000,
+                "fields": [
+                  {
+                    "name": "Build.RequestedFor",
+                    "value": "$(Build.RequestedFor)",
+                    "inline": true
+                  },
+                  {
+                    "name": "Build.Reason",
+                    "value": "$(Build.Reason)",
+                    "inline": true
+                  }
+                ],
+                "url": "$(System.CollectionUri)/$(System.TeamProject)/_build/results?buildId=$(Build.BuildId)&view=logs"
+              }
+            ]
+
       - ${{ if contains(parameters.PublishStore, true) }}:
         - task: GooglePlayRelease@4
           displayName: Publicando no teste interno
@@ -146,6 +176,36 @@ stages:
           ArtifactName: 'drop_ios'
           publishLocation: 'Container'
 
+      - task: ado-discord-webhook@2
+        displayName: 'Notificação no discord para falha de build'
+        condition: failed()
+        inputs:
+          webhookId: '$(discord_webhookId)'
+          webhookKey: '$(discord_webhookKey)'
+          content: '<@&$(discord_mentionRoleId)>'
+          embeds: |
+            [
+              {
+                "type": "rich",
+                "title": "$(Build.DefinitionName) ($(Build.BuildNumber))",
+                "description": "Build ios failed!",
+                "color": 0xff0000,
+                "fields": [
+                  {
+                    "name": "Build.RequestedFor",
+                    "value": "$(Build.RequestedFor)",
+                    "inline": true
+                  },
+                  {
+                    "name": "Build.Reason",
+                    "value": "$(Build.Reason)",
+                    "inline": true
+                  }
+                ],
+                "url": "$(System.CollectionUri)/$(System.TeamProject)/_build/results?buildId=$(Build.BuildId)&view=logs"
+              }
+            ]
+
  - stage: unit_test
    displayName: "Testes de unidade"
    dependsOn: []
@@ -171,6 +231,36 @@ stages:
 
             echo "##vso[build.addbuildtag]${Pipe}"
             echo "##vso[build.addbuildtag]${Repo}"
+
+      - task: ado-discord-webhook@2
+        displayName: 'Notificação no discord para falha de build'
+        condition: failed()
+        inputs:
+          webhookId: '$(discord_webhookId)'
+          webhookKey: '$(discord_webhookKey)'
+          content: '<@&$(discord_mentionRoleId)>'
+          embeds: |
+            [
+              {
+                "type": "rich",
+                "title": "$(Build.DefinitionName) ($(Build.BuildNumber))",
+                "description": "Unit tests failed!",
+                "color": 0xff0000,
+                "fields": [
+                  {
+                    "name": "Build.RequestedFor",
+                    "value": "$(Build.RequestedFor)",
+                    "inline": true
+                  },
+                  {
+                    "name": "Build.Reason",
+                    "value": "$(Build.Reason)",
+                    "inline": true
+                  }
+                ],
+                "url": "$(System.CollectionUri)/$(System.TeamProject)/_build/results?buildId=$(Build.BuildId)&view=logs"
+              }
+            ]
 
  - ${{ if contains(parameters.PublishStore, 'true') }}:
     - stage: deployStage
@@ -211,3 +301,63 @@ stages:
                       ipaPath: '$(System.ArtifactsDirectory)/**/*.ipa'
                       shouldSkipWaitingForProcessing: true
                       shouldSkipSubmission: true
+
+                  - task: ado-discord-webhook@2
+                    displayName: 'Notificação no discord para deploy com sucesso'
+                    condition: succeeded()
+                    inputs:
+                      webhookId: '$(discord_webhookId)'
+                      webhookKey: '$(discord_webhookKey)'
+                      content: '<@&$(discord_mentionRoleId)>'
+                      embeds: |
+                        [
+                          {
+                            "type": "rich",
+                            "title": "$(Build.DefinitionName) ($(Build.BuildNumber))",
+                            "description": "Versão $(Major).$(Minor).$(Rev).$(Build.BuildId) IOS no TestFlight!",
+                            "color": 0xff0000,
+                            "fields": [
+                              {
+                                "name": "Build.RequestedFor",
+                                "value": "$(Build.RequestedFor)",
+                                "inline": true
+                              },
+                              {
+                                "name": "Build.Reason",
+                                "value": "$(Build.Reason)",
+                                "inline": true
+                              }
+                            ],
+                            "url": "$(System.CollectionUri)/$(System.TeamProject)/_build/results?buildId=$(Build.BuildId)&view=logs"
+                          }
+                        ]
+
+                  - task: ado-discord-webhook@2
+                    displayName: 'Notificação no discord para falha de deploy'
+                    condition: failed()
+                    inputs:
+                      webhookId: '$(discord_webhookId)'
+                      webhookKey: '$(discord_webhookKey)'
+                      content: '<@&$(discord_mentionRoleId)>'
+                      embeds: |
+                        [
+                          {
+                            "type": "rich",
+                            "title": "$(Build.DefinitionName) ($(Build.BuildNumber))",
+                            "description": "Deploy IOS failed!",
+                            "color": 0xff0000,
+                            "fields": [
+                              {
+                                "name": "Build.RequestedFor",
+                                "value": "$(Build.RequestedFor)",
+                                "inline": true
+                              },
+                              {
+                                "name": "Build.Reason",
+                                "value": "$(Build.Reason)",
+                                "inline": true
+                              }
+                            ],
+                            "url": "$(System.CollectionUri)/$(System.TeamProject)/_build/results?buildId=$(Build.BuildId)&view=logs"
+                          }
+                        ]
