@@ -22,32 +22,43 @@
             HeightRequest="180"
             Source="logo" />
 
-        <Entry
-            x:Name="patField"
-            Grid.Row="1"
-            Grid.ColumnSpan="2"
-            FontFamily="OpenSansSemibold"
-            FontSize="16"
-            HeightRequest="80"
-            HorizontalTextAlignment="Center"
-            IsPassword="True"
-            Placeholder="(Personal Access Token)"
-            PlaceholderColor="LightGray"
-            Text="{x:Bind PAT, Mode=TwoWay}"
-            TextColor="White"
-            VerticalOptions="Center" />
+        <StackLayout
+                Grid.Row="1"
+                Grid.ColumnSpan="2"
+                Spacing="0"
+                Orientation="Vertical">
 
-        <ImageButton
-            Grid.Row="1"
-            Grid.Column="2"
-            Padding="6"
-            Clicked="ImageButton_Clicked"
-            HeightRequest="48"
-            WidthRequest="48"
-            HorizontalOptions="EndAndExpand"
-            Source="eye_regular"
-            VerticalOptions="Center" />
+            <Grid ColumnDefinitions="*,48">
+                <Entry
+                    x:Name="patField"
+                    FontFamily="OpenSansSemibold"
+                    FontSize="16"
+                    HeightRequest="80"
+                    HorizontalTextAlignment="Center"
+                    IsPassword="True"
+                    Placeholder="(Personal Access Token)"
+                    PlaceholderColor="LightGray"
+                    Text="{x:Bind PAT, Mode=TwoWay}"
+                    TextColor="White"
+                    VerticalOptions="Center" />
+                <ImageButton
+                    Grid.Row="1"
+                    Grid.Column="2"
+                    Padding="6"
+                    Clicked="ImageButton_Clicked"
+                    HeightRequest="48"
+                    WidthRequest="48"
+                    HorizontalOptions="EndAndExpand"
+                    Source="eye_regular"
+                    VerticalOptions="Center" />
+                </Grid>
 
+            <BoxView
+                HeightRequest="1"
+                Color="White"
+                VerticalOptions="End"/>
+        </StackLayout>
+        
         <Button
             Grid.Row="2"
             Grid.ColumnSpan="2"

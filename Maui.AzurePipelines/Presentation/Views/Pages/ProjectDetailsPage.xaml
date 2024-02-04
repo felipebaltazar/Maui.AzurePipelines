@@ -17,6 +17,7 @@
     <Grid
         ColumnDefinitions="48,*,48"
         ColumnSpacing="0"
+        Padding="{OnPlatform iOS=16}"
         RowDefinitions="80,*">
 
         <Label

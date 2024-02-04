@@ -89,7 +89,7 @@
             Margin="16,0,0,0"
             ItemsSource="{x:Bind Projects, IsItemsSource=True}">
             <CollectionView.ItemsLayout>
-                <LinearItemsLayout Orientation="Horizontal" />
+                <LinearItemsLayout Orientation="Horizontal" ItemSpacing="{OnPlatform}" />
             </CollectionView.ItemsLayout>
             <CollectionView.ItemTemplate>
                 <DataTemplate>
