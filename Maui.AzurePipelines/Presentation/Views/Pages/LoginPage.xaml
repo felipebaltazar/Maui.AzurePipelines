@@ -43,6 +43,7 @@
             Padding="6"
             Clicked="ImageButton_Clicked"
             HeightRequest="48"
+            WidthRequest="48"
             HorizontalOptions="EndAndExpand"
             Source="eye_regular"
             VerticalOptions="Center" />
@@ -66,6 +67,8 @@
             Text="Como gerar um Personal Access Token?"
             TextColor="White"
             TextDecorations="Underline"
+            HeightRequest="48"
+            VerticalOptions="Start"
             VerticalTextAlignment="Start">
             <Label.GestureRecognizers>
                 <TapGestureRecognizer Command="{x:Bind DocumentationCommand}" />
@@ -76,6 +79,7 @@
             Grid.Row="4"
             FontSize="16"
             TextColor="White"
+            HeightRequest="48"
             TextDecorations="Underline"
             VerticalTextAlignment="End">
             <Label.FormattedText>
