@@ -385,7 +385,7 @@ FodyWeavers.xsd
 *.code-workspace
 
 # Meteor extension
-.meteor/*
+**/.meteor/**
 
 # Local History for Visual Studio Code
 .history/
@@ -399,3 +399,4 @@ FodyWeavers.xsd
 
 # JetBrains Rider
 *.sln.iml
+
