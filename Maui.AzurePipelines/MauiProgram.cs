@@ -10,6 +10,10 @@ using PipelineApproval.Presentation.ViewModels.Pages;
 using PipelineApproval.Presentation.Views.Controls;
 using PipelineApproval.Presentation.Views.Pages;
 
+#if DEBUG
+using DotNet.Meteor.HotReload.Plugin;
+#endif
+
 namespace PipelineApproval;
 
 public static class MauiProgram
@@ -30,7 +34,8 @@ public static class MauiProgram
             .ConfigureMopups();
 
 #if DEBUG
-        builder.Logging.AddDebug();
+        builder.EnableHotReload()
+        .Logging.AddDebug();
 #endif
         var serviceCollection = builder.Services;
 
