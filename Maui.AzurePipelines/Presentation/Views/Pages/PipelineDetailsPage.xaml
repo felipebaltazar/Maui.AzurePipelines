@@ -124,7 +124,8 @@
                     Text="Approvals: "
                     TextColor="LightGray" />
 
-                <CollectionView ItemsSource="{x:Bind Approvals, IsItemsSource=True}">
+                <CollectionView 
+                    IsVisible="{x:Bind Approvals.Count is not eq 0}" ItemsSource="{x:Bind Approvals, IsItemsSource=True}">
                     <CollectionView.ItemsLayout>
                         <LinearItemsLayout Orientation="Horizontal" />
                     </CollectionView.ItemsLayout>
@@ -230,11 +231,12 @@
                     Adapter="{x:Bind Records}"
                     OnSelectedItemsChanged="VirtualListView_OnSelectedItemsChanged"
                     SelectedItem="{x:Bind SelectedRecordPosition}"
+                    BackgroundColor="#201f1e"
                     SelectionMode="Single"
                     VerticalOptions="FillAndExpand">
                     <vlv:VirtualListView.ItemTemplate>
                         <DataTemplate>
-                            <vlv:VirtualViewCell SelectedBackground="LightGray" UnselectedBackground="Transparent">
+                            <vlv:VirtualViewCell SelectedBackground="LightGray" UnselectedBackground="#201f1e">
                                 <StackLayout CompressedLayout.IsHeadless="True" Orientation="Vertical">
                                     <BoxView HeightRequest="1" Color="Gray" />
                                     <StackLayout

@@ -89,7 +89,7 @@
             Margin="16,0,0,0"
             ItemsSource="{x:Bind Projects, IsItemsSource=True}">
             <CollectionView.ItemsLayout>
-                <LinearItemsLayout Orientation="Horizontal" ItemSpacing="{OnPlatform}" />
+                <LinearItemsLayout Orientation="Horizontal" ItemSpacing="{OnPlatform iOS=16, Default=0}" />
             </CollectionView.ItemsLayout>
             <CollectionView.ItemTemplate>
                 <DataTemplate>
@@ -227,10 +227,10 @@
             ItemsSource="{x:Bind Boards, IsItemsSource=True}">
             <CollectionView.ItemsLayout>
                 <GridItemsLayout
-                    HorizontalItemSpacing="{OnPlatform iOS=16}"
+                    HorizontalItemSpacing="{OnPlatform iOS=16, Default=0}"
                     Orientation="Vertical"
                     Span="2"
-                    VerticalItemSpacing="{OnPlatform iOS=16}" />
+                    VerticalItemSpacing="{OnPlatform iOS=16, Default=0}" />
             </CollectionView.ItemsLayout>
             <CollectionView.ItemTemplate>
                 <DataTemplate>
