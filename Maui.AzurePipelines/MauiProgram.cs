@@ -9,6 +9,8 @@ using PipelineApproval.Models;
 using PipelineApproval.Presentation.ViewModels.Pages;
 using PipelineApproval.Presentation.Views.Controls;
 using PipelineApproval.Presentation.Views.Pages;
+using Microsoft.Maui.Handlers;
+
 
 #if DEBUG
 using DotNet.Meteor.HotReload.Plugin;
@@ -18,7 +20,7 @@ namespace PipelineApproval;
 
 public static class MauiProgram
 {
-	public static MauiApp CreateMauiApp()
+    public static MauiApp CreateMauiApp()
     {
         var builder = MauiApp.CreateBuilder();
         builder
@@ -32,18 +34,29 @@ public static class MauiProgram
                 fonts.AddFont("FontAwesomeSolid.otf", "FontAwesomeSolid");
             })
             .ConfigureMopups();
-
+        
 #if DEBUG
         builder.EnableHotReload()
         .Logging.AddDebug();
 #endif
         var serviceCollection = builder.Services;
 
+        ConfigureHandlers();
         RegisterServices(serviceCollection);
         RegisterPages(serviceCollection);
         RegisterPopups(serviceCollection);
 
         return builder.Build();
+    }
+
+    private static void ConfigureHandlers()
+    {
+        EntryHandler.Mapper.AppendToMapping(nameof(Entry), (handler, view) =>
+        {
+#if ANDROID
+            handler.PlatformView.SetBackgroundColor(Android.Graphics.Color.Transparent);
+#endif
+        });
     }
 
     private static void RegisterPopups(IServiceCollection sCollection)
