@@ -43,8 +43,10 @@
 	</PropertyGroup>
   
 	<ItemGroup>
+    <!-- Icons for IOS -->
+    <MauiIcon Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'ios'" Include="Resources\AppIcon\appicon.svg" BaseSize="800,800" Color="#000000" />
 
-		<!-- Images -->
+    <!-- Images -->
 		<MauiImage Include="Resources\Images\*" />
 
 		<!-- Custom Fonts -->
@@ -75,6 +77,9 @@
 	  <MauiXaml Update="Presentation\Views\Controls\OrganizationLoginPopup.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
+	</ItemGroup>
+	<ItemGroup>
+	  <Folder Include="Resources\AppIcon\" />
 	</ItemGroup>
 
 </Project>
