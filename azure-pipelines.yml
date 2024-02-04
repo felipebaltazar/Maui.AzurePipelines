@@ -164,3 +164,42 @@ stages:
 
             echo "##vso[build.addbuildtag]${Pipe}"
             echo "##vso[build.addbuildtag]${Repo}"
+
+ - stage: deployStage
+   condition: not(eq(variables['Build.Reason'], 'PullRequest'))
+   dependsOn:
+    - build_android_ios
+    - unit_test
+
+   displayName: Deploy Stage
+   jobs:
+    - deployment: ios
+      dependsOn: []
+      environment: AzureDevops Mobile - Staging
+      displayName: "Publish IOS - TestFlight"
+      pool:
+        vmImage: "macos-latest"
+      strategy:
+        runOnce:
+          deploy:
+            steps:
+              - checkout: none
+
+              - task: DownloadBuildArtifacts@1
+                displayName: "Download IPA"
+                inputs:
+                  buildType: "current"
+                  downloadType: "single"
+                  artifactName: "drop_ios"
+                  downloadPath: "$(System.ArtifactsDirectory)"
+
+              - task: AppStoreRelease@1
+                displayName: "Publish to the App Store TestFlight track"
+                inputs:
+                  serviceEndpoint: 'FiveHighAppleStore'
+                  releaseTrack: 'TestFlight'
+                  appIdentifier: 'com.maui.azurepipeline.approval'
+                  appType: 'iOS'
+                  ipaPath: '$(System.ArtifactsDirectory)/**/*.ipa'
+                  shouldSkipWaitingForProcessing: true
+                  shouldSkipSubmission: true
