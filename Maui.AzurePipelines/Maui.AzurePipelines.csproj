@@ -44,22 +44,22 @@
   
 	<ItemGroup>
     <!-- Icons for IOS -->
-    <MauiIcon Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'ios'" Include="Resources\AppIcon\appicon.svg" BaseSize="800,800" Color="#000000" />
+    <MauiIcon Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'ios'" Include="Resources\AppIcon\appicon.svg" BaseSize="600,600" Color="#000000" />
 
     <!-- Splash for IOS -->
-    <MauiSplashScreen Include="Resources\AppIcon\appicon.svg" Color="#000000" BaseSize="800,800" />
+    <MauiSplashScreen Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'ios'" Include="Resources\AppIcon\appicon.svg" Color="#000000" BaseSize="800,800" />
     
     <!-- Images -->
-		<MauiImage Include="Resources\Images\*" />
+	<MauiImage Include="Resources\Images\*" />
 
-		<!-- Custom Fonts -->
-		<MauiFont Include="Resources\Fonts\*" />
+	<!-- Custom Fonts -->
+	<MauiFont Include="Resources\Fonts\*" />
 
-		<!-- Raw Assets (also remove the "Resources\Raw" prefix) -->
-		<MauiAsset Include="Resources\Raw\**" LogicalName="%(RecursiveDir)%(Filename)%(Extension)" />
+	<!-- Raw Assets (also remove the "Resources\Raw" prefix) -->
+	<MauiAsset Include="Resources\Raw\**" LogicalName="%(RecursiveDir)%(Filename)%(Extension)" />
 
     <!-- Android native resources -->
-	  <AndroidResource Include="Platforms\Android\drawable\**" />
+	<AndroidResource Include="Platforms\Android\drawable\**" />
     <AndroidResource Include="Platforms\Android\layout\**" />
     <AndroidResource Include="Platforms\Android\mipmap*\**" />
     <None Remove="pre-release.apk" />
