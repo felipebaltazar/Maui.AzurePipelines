@@ -10,7 +10,7 @@ parameters:
 - name: dotnetVersion
   displayName: Versão do .Net
   type: string
-  default: 7.x
+  default: 8.x
 
 name: $(Major).$(Minor).$(Rev).$(Build.BuildId)
 
