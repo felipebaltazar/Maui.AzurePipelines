@@ -1,9 +1,11 @@
-﻿using PipelineApproval.Abstractions;
+﻿using Newtonsoft.Json;
+using PipelineApproval.Abstractions;
 using PipelineApproval.Abstractions.Data;
 using PipelineApproval.Abstractions.Views;
 using PipelineApproval.Infrastructure.Services;
 using Refit;
 using System.Diagnostics;
+using System.Text.Json.Serialization;
 using static PipelineApproval.Infrastructure.Constants.Url;
 
 namespace PipelineApproval.Infrastructure.Extensions;
@@ -47,6 +49,14 @@ public static class IServiceCollectionExtensions
 
         serviceCollection.AddSingleton((s) =>
             BuildWithFactory<IVsaexApi>(s, VSAEX_API));
+
+        return serviceCollection;
+    }
+
+    public static IServiceCollection AddServerDrivenUIApi(this IServiceCollection serviceCollection)
+    {
+        serviceCollection.AddSingleton((s) =>
+            BuildWithFactory<IServerDrivenUIApi>(s, SERVER_DRIVEN_UI_API));
 
         return serviceCollection;
     }

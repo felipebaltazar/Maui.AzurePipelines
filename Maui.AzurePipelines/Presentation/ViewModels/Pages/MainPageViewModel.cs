@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Logging;
+﻿using Maui.ServerDrivenUI;
+using Microsoft.Extensions.Logging;
 using PipelineApproval.Abstractions;
 using PipelineApproval.Abstractions.Views;
 using PipelineApproval.Infrastructure.Commands;
@@ -15,7 +16,7 @@ public class MainPageViewModel : BaseViewModel, IInitializeAware
     private readonly ISecureStorageService _secureStorageService;
     private readonly IPreferencesService _preferencesService;
     private readonly IAzureService _azureService;
-
+    private readonly IServerDrivenUIService _serverDrivenUIService;
     private string _url;
 
     private string company;
@@ -93,6 +94,7 @@ public class MainPageViewModel : BaseViewModel, IInitializeAware
         ISecureStorageService secureStorageService,
         IPreferencesService preferencesService,
         IMainThreadService mainThreadService,
+        IServerDrivenUIService serverDrivenUIService,
         IAzureService azureService,
         ILogger logger)
         : base(
@@ -104,10 +106,12 @@ public class MainPageViewModel : BaseViewModel, IInitializeAware
         _secureStorageService = secureStorageService;
         _preferencesService = preferencesService;
         _azureService = azureService;
+        _serverDrivenUIService = serverDrivenUIService;
     }
 
     public async Task InitializeAsync(IDictionary<string, string> parameters)
     {
+        //await _serverDrivenUIService.ClearCacheAsync();
         accountApiResponse = parameters.GetValueOrDefault<AccountResponseApi>(Constants.Navigation.ACCOUNT_PARAMETER);
 
         await ExecuteBusyActionAsync(async () =>

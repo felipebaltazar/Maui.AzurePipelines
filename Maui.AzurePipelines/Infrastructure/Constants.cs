@@ -28,6 +28,8 @@ public static class Constants
 
         public const string GITHUB_REPOSIOTRY = "https://github.com/felipebaltazar/Maui.AzurePipelines";
 
+        public const string SERVER_DRIVEN_UI_API = "https://serverdrivenui.azurewebsites.net/";
+
         public const string VISUALSTUDIO_API = "https://app.vssps.visualstudio.com";
 
         public const string VSAEX_API = "https://vsaex.dev.azure.com";
