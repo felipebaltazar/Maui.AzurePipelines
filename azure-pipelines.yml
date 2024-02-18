@@ -124,7 +124,8 @@ stages:
       displayName: Build iOS
       dependsOn: []
       pool:
-        vmimage: 'macOS-latest'
+        #vmimage: 'macOS-latest'
+        vmImage: macOS-13
         demands:
         - MSBuild
       steps:
