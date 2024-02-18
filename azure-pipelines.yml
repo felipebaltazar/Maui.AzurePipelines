@@ -62,7 +62,7 @@ stages:
         inputs:
           script: |
             cd "Maui.AzurePipelines/"
-            dotnet publish Maui.AzurePipelines.csproj -f net7.0-android -c Release /p:ApplicationDisplayVersion=$(Major).$(Minor).$(Rev) /p:ApplicationVersion=$(Build.BuildId) /p:AndroidSigningKeyPass=$(keystore-password) /p:AndroidSigningStorePass=$(keystore-password) /p:AndroidSigningKeyAlias=$(keystore-alias)
+            dotnet publish Maui.AzurePipelines.csproj -f net8.0-android -c Release /p:ApplicationDisplayVersion=$(Major).$(Minor).$(Rev) /p:ApplicationVersion=$(Build.BuildId) /p:AndroidSigningKeyPass=$(keystore-password) /p:AndroidSigningStorePass=$(keystore-password) /p:AndroidSigningKeyAlias=$(keystore-alias)
 
       - task: CopyFiles@2
         displayName: Copiando para o diretorio de artifacts
@@ -160,7 +160,7 @@ stages:
           targetType: 'inline'
           script: |
             cd "Maui.AzurePipelines/"
-            dotnet publish Maui.AzurePipelines.csproj -f net7.0-ios -c Release /p:ApplicationDisplayVersion=$(Major).$(Minor).$(Rev) /p:ApplicationVersion=$(Build.BuildId)
+            dotnet publish Maui.AzurePipelines.csproj -f net8.0-ios -c Release /p:ApplicationDisplayVersion=$(Major).$(Minor).$(Rev) /p:ApplicationVersion=$(Build.BuildId)
 
       - task: CopyFiles@2
         inputs:
