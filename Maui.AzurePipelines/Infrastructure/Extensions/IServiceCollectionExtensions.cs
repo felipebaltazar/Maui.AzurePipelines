@@ -51,6 +51,14 @@ public static class IServiceCollectionExtensions
         return serviceCollection;
     }
 
+    public static IServiceCollection AddServerDrivenUIApi(this IServiceCollection serviceCollection)
+    {
+        serviceCollection.AddSingleton((s) =>
+            BuildWithFactory<IServerDrivenUIApi>(s, SERVER_DRIVEN_UI_API));
+
+        return serviceCollection;
+    }
+
     private static T BuildWithFactory<T>(IServiceProvider s, string url)
     {
         var factory = s.GetService<IHttpClientFactory>();

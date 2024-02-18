@@ -10,7 +10,8 @@ using PipelineApproval.Presentation.ViewModels.Pages;
 using PipelineApproval.Presentation.Views.Controls;
 using PipelineApproval.Presentation.Views.Pages;
 using Microsoft.Maui.Handlers;
-
+using Maui.ServerDrivenUI;
+using PipelineApproval.Abstractions.Data;
 
 #if DEBUG
 using DotNet.Meteor.HotReload.Plugin;
@@ -20,6 +21,8 @@ namespace PipelineApproval;
 
 public static class MauiProgram
 {
+    private static Lazy<IServiceProvider> _serviceProvider;
+
     public static MauiApp CreateMauiApp()
     {
         var builder = MauiApp.CreateBuilder();
@@ -32,6 +35,13 @@ public static class MauiProgram
                 fonts.AddFont("OpenSans-Semibold.ttf", "OpenSansSemibold");
                 fonts.AddFont("DevOpsIcons.ttf", "DevOpsIcons");
                 fonts.AddFont("FontAwesomeSolid.otf", "FontAwesomeSolid");
+            })
+            .ConfigureServerDrivenUI(s =>
+            {
+                s.RegisterElementGetter(key =>
+                    _serviceProvider.Value.GetService<IServerDrivenUIApi>().GetUIElementAsync(key));
+
+                s.AddServerElement("595597a8-25df-4d60-99f4-4b5bad595403");
             })
             .ConfigureMopups();
         
@@ -46,17 +56,17 @@ public static class MauiProgram
         RegisterPages(serviceCollection);
         RegisterPopups(serviceCollection);
 
-        return builder.Build();
+        var mauiApp = builder.Build();
+        _serviceProvider = new Lazy<IServiceProvider>(() => mauiApp.Services);
+        return mauiApp;
     }
 
     private static void ConfigureHandlers()
     {
-        EntryHandler.Mapper.AppendToMapping(nameof(Entry), (handler, view) =>
-        {
 #if ANDROID
-            handler.PlatformView.SetBackgroundColor(Android.Graphics.Color.Transparent);
+        EntryHandler.Mapper.AppendToMapping(nameof(Entry),
+            (handler, view) => handler.PlatformView.SetBackgroundColor(Android.Graphics.Color.Transparent));
 #endif
-        });
     }
 
     private static void RegisterPopups(IServiceCollection sCollection)
@@ -93,5 +103,6 @@ public static class MauiProgram
         sCollection.AddSingleton<ILazyDependency<ILoaderService>, LazyDependency<ILoaderService>>();
 
         sCollection.AddAzureApiService();
+        sCollection.AddServerDrivenUIApi();
     }
 }

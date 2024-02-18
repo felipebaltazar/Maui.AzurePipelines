@@ -66,7 +66,6 @@
             </Label.GestureRecognizers>
         </Label>
 
-
         <Label
             Grid.Row="1"
             Grid.ColumnSpan="3"
@@ -89,7 +88,7 @@
             Margin="16,0,0,0"
             ItemsSource="{x:Bind Projects, IsItemsSource=True}">
             <CollectionView.ItemsLayout>
-                <LinearItemsLayout Orientation="Horizontal" ItemSpacing="{OnPlatform iOS=16, Default=0}" />
+                <LinearItemsLayout ItemSpacing="{OnPlatform iOS=16, Default=0}" Orientation="Horizontal" />
             </CollectionView.ItemsLayout>
             <CollectionView.ItemTemplate>
                 <DataTemplate>
@@ -167,95 +166,11 @@
 
         </CollectionView>
 
-        <Label
+        <ServerDrivenView
             Grid.Row="3"
-            Grid.ColumnSpan="2"
-            Margin="16,0,0,0"
-            FontAttributes="Bold"
-            FontSize="20"
-            TextColor="White"
-            VerticalTextAlignment="Center">
-            <Label.FormattedText>
-                <FormattedString>
-                    <Span FontFamily="DevOpsIcons" Text="{x:Static c:Icons.Task}" />
-                    <Span FontFamily="OpenSansSemibold" Text=" Boards" />
-                </FormattedString>
-            </Label.FormattedText>
-        </Label>
-
-        <Frame
-            Grid.Row="3"
-            Grid.Column="1"
-            Grid.ColumnSpan="2"
-            Margin="40,0,16,0"
-            Padding="8"
-            BackgroundColor="#424242"
-            BorderColor="#424242"
-            CornerRadius="8"
-            HeightRequest="32">
-            <StackLayout
-                Padding="6,0"
-                Orientation="Horizontal"
-                Spacing="6">
-
-                <Label
-                    FontAttributes="Bold"
-                    FontSize="12"
-                    HorizontalOptions="CenterAndExpand"
-                    LineBreakMode="TailTruncation"
-                    Text="{x:Bind SelectedTeam.Name}"
-                    TextColor="White"
-                    VerticalTextAlignment="Center" />
-
-                <Label
-                    FontFamily="FontAwesomeSolid"
-                    FontSize="18"
-                    HorizontalOptions="Center"
-                    Text="{x:Static f:FontAwesome.ChevronDown}"
-                    TextColor="White"
-                    VerticalTextAlignment="Center" />
-            </StackLayout>
-            <Frame.GestureRecognizers>
-                <TapGestureRecognizer Command="{x:Bind ChangeTeamCommand}" />
-            </Frame.GestureRecognizers>
-        </Frame>
-
-        <CollectionView
-            Grid.Row="4"
+            Grid.RowSpan="2"
             Grid.ColumnSpan="3"
-            Margin="16,0"
-            ItemsSource="{x:Bind Boards, IsItemsSource=True}">
-            <CollectionView.ItemsLayout>
-                <GridItemsLayout
-                    HorizontalItemSpacing="{OnPlatform iOS=16, Default=0}"
-                    Orientation="Vertical"
-                    Span="2"
-                    VerticalItemSpacing="{OnPlatform iOS=16, Default=0}" />
-            </CollectionView.ItemsLayout>
-            <CollectionView.ItemTemplate>
-                <DataTemplate>
-                    <Frame
-                        Margin="6"
-                        Padding="8"
-                        x:DataType="m:Board"
-                        BackgroundColor="#424242"
-                        BorderColor="#424242"
-                        CornerRadius="4"
-                        HeightRequest="60">
-                        <StackLayout>
-                            <Label
-                                Grid.Column="1"
-                                FontAttributes="Bold"
-                                FontSize="12"
-                                LineBreakMode="TailTruncation"
-                                Text="{x:Bind Name}"
-                                TextColor="White" />
-                        </StackLayout>
-                    </Frame>
-                </DataTemplate>
-            </CollectionView.ItemTemplate>
-
-        </CollectionView>
+            ServerKey="595597a8-25df-4d60-99f4-4b5bad595403" />
 
         <Label
             Grid.Row="5"
