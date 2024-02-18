@@ -2,6 +2,7 @@
 
 namespace PipelineApproval.Presentation.Views.Pages;
 
+[XamlCompilation(XamlCompilationOptions.Skip)]
 public partial class MainPage : BaseContentPage
 {
     private MainPageViewModel ViewModel => BindingContext as MainPageViewModel;

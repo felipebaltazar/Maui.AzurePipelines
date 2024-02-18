@@ -12,6 +12,8 @@ using PipelineApproval.Presentation.Views.Pages;
 using Microsoft.Maui.Handlers;
 using Maui.ServerDrivenUI;
 using PipelineApproval.Abstractions.Data;
+using System.Diagnostics;
+using TaskExtensions = PipelineApproval.Infrastructure.Extensions.TaskExtensions;
 
 #if DEBUG
 using DotNet.Meteor.HotReload.Plugin;
@@ -21,10 +23,15 @@ namespace PipelineApproval;
 
 public static class MauiProgram
 {
-    private static Lazy<IServiceProvider> _serviceProvider;
-
     public static MauiApp CreateMauiApp()
     {
+        TaskExtensions.SetDefaultExceptionHandling(ex => {
+            Debug.Write(ex.ToString());
+
+            if(Debugger.IsAttached)
+                Debugger.Break();
+        });
+
         var builder = MauiApp.CreateBuilder();
         builder
             .UseMauiApp<App>()
@@ -38,13 +45,15 @@ public static class MauiProgram
             })
             .ConfigureServerDrivenUI(s =>
             {
-                s.RegisterElementGetter(key =>
-                    _serviceProvider.Value.GetService<IServerDrivenUIApi>().GetUIElementAsync(key));
+                s.UIElementCacheExpiration = TimeSpan.FromMinutes(1);
+
+                s.RegisterElementGetter((key, provider) =>
+                    provider.GetService<IServerDrivenUIApi>().GetUIElementAsync(key));
 
                 s.AddServerElement("595597a8-25df-4d60-99f4-4b5bad595403");
             })
             .ConfigureMopups();
-        
+
 #if DEBUG
         builder.EnableHotReload()
         .Logging.AddDebug();
@@ -56,9 +65,7 @@ public static class MauiProgram
         RegisterPages(serviceCollection);
         RegisterPopups(serviceCollection);
 
-        var mauiApp = builder.Build();
-        _serviceProvider = new Lazy<IServiceProvider>(() => mauiApp.Services);
-        return mauiApp;
+        return builder.Build();
     }
 
     private static void ConfigureHandlers()

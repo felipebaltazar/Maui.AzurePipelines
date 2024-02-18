@@ -1,9 +1,11 @@
-﻿using PipelineApproval.Abstractions;
+﻿using Newtonsoft.Json;
+using PipelineApproval.Abstractions;
 using PipelineApproval.Abstractions.Data;
 using PipelineApproval.Abstractions.Views;
 using PipelineApproval.Infrastructure.Services;
 using Refit;
 using System.Diagnostics;
+using System.Text.Json.Serialization;
 using static PipelineApproval.Infrastructure.Constants.Url;
 
 namespace PipelineApproval.Infrastructure.Extensions;
