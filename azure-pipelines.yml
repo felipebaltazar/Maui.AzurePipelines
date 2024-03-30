@@ -5,7 +5,7 @@ parameters:
 - name: PublishStore
   displayName: Publicar nas lojas
   type: boolean
-  default: false
+  default: true
 
 - name: dotnetVersion
   displayName: Versão do .Net
