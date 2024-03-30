@@ -111,16 +111,6 @@ stages:
               }
             ]
 
-      - ${{ if contains(parameters.PublishStore, true) }}:
-        - task: GooglePlayRelease@4
-          displayName: Publicando no teste interno
-          inputs:
-            serviceConnection: 'FiveHighGooglePlay'
-            applicationId: 'com.maui.azurepipeline.approval'
-            action: 'SingleBundle'
-            bundleFile: '**/*.aab'
-            track: 'internal'
-
     - job: Job_iOS
       displayName: Build iOS
       dependsOn: []
@@ -368,3 +358,32 @@ stages:
                             "url": "$(System.CollectionUri)/$(System.TeamProject)/_build/results?buildId=$(Build.BuildId)&view=logs"
                           }
                         ]
+
+        - deployment: android
+          dependsOn: []
+          environment: AzureDevops Mobile - Staging
+          displayName: "Publish Android - teste interno"
+          pool:
+            vmimage: 'windows-latest'
+          strategy:
+            runOnce:
+              deploy:
+                steps:
+                  - checkout: none
+
+                  - task: DownloadBuildArtifacts@1
+                    displayName: "Download "
+                    inputs:
+                      buildType: "current"
+                      downloadType: "single"
+                      artifactName: "drop_android"
+                      downloadPath: "$(System.ArtifactsDirectory)"
+
+                  - task: GooglePlayRelease@4
+                    displayName: Publicando no teste interno
+                    inputs:
+                      serviceConnection: 'FiveHighGooglePlay'
+                      applicationId: 'com.maui.azurepipeline.approval'
+                      action: 'SingleBundle'
+                      bundleFile: '$(System.ArtifactsDirectory)/**/*.aab'
+                      track: 'internal'
