@@ -10,7 +10,7 @@ parameters:
 - name: dotnetVersion
   displayName: Versão do .Net
   type: string
-  default: 8.x
+  default: 8.0.402
 
 name: $(Major).$(Minor).$(Rev).$(Build.BuildId)
 
@@ -116,11 +116,18 @@ stages:
       dependsOn: []
       pool:
         #vmimage: 'macOS-latest'
-        vmImage: macOS-15
+        vmImage: macOS-14
         demands:
         - MSBuild
       steps:
-      
+
+      - task: Bash@3
+        displayName: Select XCode 16
+        inputs:
+          targetType: 'inline'
+          script: |
+            sudo xcode-select -switch /Applications/Xcode_16.app/Contents/Developer
+
       - task: UseDotNet@2
         inputs:
           packageType: 'sdk'
