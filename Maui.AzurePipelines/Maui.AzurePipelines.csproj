@@ -42,11 +42,6 @@
     <AndroidSigningKeyStore>devopsapproval.keystore</AndroidSigningKeyStore>
   </PropertyGroup>
 
-  <PropertyGroup Condition="'$(TargetFramework)'=='net8.0-ios17'">
-    <CodesignKey>Apple Development: Created via API (XNG86Q8UW7)</CodesignKey>
-    <CodesignProvision>VS: com.maui.azurepipeline.approval Development</CodesignProvision>
-  </PropertyGroup>
-
   <ItemGroup>
     <!-- Icons for IOS -->
     <MauiIcon Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'ios'" Include="Resources\AppIcon\appicon.svg" BaseSize="512,512" Color="#000000" />
