@@ -116,7 +116,7 @@ stages:
       dependsOn: []
       pool:
         #vmimage: 'macOS-latest'
-        vmImage: macOS-13
+        vmImage: macOS-14
         demands:
         - MSBuild
       steps:
@@ -152,7 +152,7 @@ stages:
           targetType: 'inline'
           script: |
             cd "Maui.AzurePipelines/"
-            dotnet publish Maui.AzurePipelines.csproj -f net8.0-ios17 -c Release /p:ApplicationDisplayVersion=$(Major).$(Minor).$(Rev) /p:ApplicationVersion=$(Build.BuildId)
+            dotnet publish Maui.AzurePipelines.csproj -f net8.0-ios -c Release /p:ApplicationDisplayVersion=$(Major).$(Minor).$(Rev) /p:ApplicationVersion=$(Build.BuildId)
 
       - task: CopyFiles@2
         inputs:
