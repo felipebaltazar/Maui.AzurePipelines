@@ -15,9 +15,10 @@
     BackgroundColor="#201f1e"
     NavigationPage.HasNavigationBar="False">
     <Grid
+        Padding="{OnPlatform iOS=16,
+                             Default=0}"
         ColumnDefinitions="48,*,48"
         ColumnSpacing="0"
-        Padding="{OnPlatform iOS=16,Default=0}"
         RowDefinitions="80,*">
 
         <Label
@@ -113,6 +114,15 @@
                     </Frame>
                 </DataTemplate>
             </CollectionView.ItemTemplate>
+            <CollectionView.EmptyView>
+                <Label
+                    FontAttributes="Bold"
+                    FontSize="16"
+                    HorizontalTextAlignment="Center"
+                    Text="Sem dados para exibir"
+                    TextColor="White"
+                    VerticalTextAlignment="Center" />
+            </CollectionView.EmptyView>
         </CollectionView>
 
         <StackLayout
