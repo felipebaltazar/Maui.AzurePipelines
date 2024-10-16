@@ -16,7 +16,7 @@
     <ApplicationIdGuid>0ca34389-c908-4e1f-a379-616128afa759</ApplicationIdGuid>
 
     <!-- Versions -->
-    <ApplicationDisplayVersion>1.2</ApplicationDisplayVersion>
+    <ApplicationDisplayVersion>1.3</ApplicationDisplayVersion>
     <ApplicationVersion>3</ApplicationVersion>
 
     <SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'ios'">11.0</SupportedOSPlatformVersion>

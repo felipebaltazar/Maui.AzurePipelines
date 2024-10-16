@@ -55,7 +55,7 @@ public class PipelineDetailsPageViewModel : BaseViewModel, INavigationAware
     public Record SelectedRecord
     {
         get => selectedRecord;
-        set => SetProperty(ref selectedRecord, value, OnSelectedRecordChanged);
+        set => MainThread.BeginInvokeOnMainThread(()=> SetProperty(ref selectedRecord, value, OnSelectedRecordChanged));
     }
 
     public ItemPosition SelectedRecordPosition
@@ -96,7 +96,7 @@ public class PipelineDetailsPageViewModel : BaseViewModel, INavigationAware
             recordsCache = null;
             approvalsCache = null;
             stages = null;
-            Approvals.Clear();
+            MainThread.BeginInvokeOnMainThread(()=> Approvals.Clear());
             records.Clear();
         }
 

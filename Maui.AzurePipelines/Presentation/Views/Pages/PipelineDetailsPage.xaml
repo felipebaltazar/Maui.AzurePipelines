@@ -124,26 +124,27 @@
                     Text="Approvals: "
                     TextColor="LightGray" />
 
-                <CollectionView 
-                    IsVisible="{x:Bind Approvals.Count is not eq 0}" ItemsSource="{x:Bind Approvals, IsItemsSource=True}">
+                <CollectionView
+                    HeightRequest="200"
+                    IsVisible="{x:Bind Approvals.Count is not eq 0}"
+                    ItemsSource="{x:Bind Approvals, IsItemsSource=True}">
                     <CollectionView.ItemsLayout>
                         <LinearItemsLayout Orientation="Horizontal" />
                     </CollectionView.ItemsLayout>
 
                     <CollectionView.ItemTemplate>
                         <DataTemplate>
-                            <Frame
+                            <Border
                                 Margin="8"
                                 Padding="6"
                                 x:DataType="c:Approval"
                                 BackgroundColor="#201f1e"
-                                BorderColor="White"
-                                CornerRadius="1"
-                                HasShadow="True"
-                                IsClippedToBounds="True">
+                                Stroke="White"
+                                StrokeShape="RoundRectangle 1,1,1,1"
+                                StrokeThickness="1"
+                                VerticalOptions="Start">
                                 <StackLayout
                                     Padding="6"
-                                    CompressedLayout.IsHeadless="True"
                                     Orientation="Vertical"
                                     Spacing="3"
                                     VerticalOptions="Center">
@@ -155,11 +156,12 @@
                                         TextColor="White"
                                         VerticalTextAlignment="Center" />
 
-                                    <Frame
+                                    <Border
                                         Padding="5"
                                         BackgroundColor="#201f1e"
-                                        BorderColor="#0078d4"
-                                        CornerRadius="3">
+                                        Stroke="#0078d4"
+                                        StrokeShape="RoundRectangle 3,3,3,3"
+                                        StrokeThickness="1">
 
                                         <StackLayout
                                             CompressedLayout.IsHeadless="True"
@@ -171,7 +173,7 @@
                                                     <FormattedString>
                                                         <FormattedString.Spans>
                                                             <Span FontAttributes="Bold" Text="Name: " />
-                                                            <Span Text="{x:Bind steps[0].assignedApprover.displayName}" />
+                                                            <Span Text="{x:Bind AssignedApprover}" />
                                                         </FormattedString.Spans>
                                                     </FormattedString>
                                                 </Label.FormattedText>
@@ -182,18 +184,18 @@
                                                     <FormattedString>
                                                         <FormattedString.Spans>
                                                             <Span FontAttributes="Bold" Text="Status: " />
-                                                            <Span Text="{x:Bind steps[0].status}" />
+                                                            <Span Text="{x:Bind Status}" />
                                                         </FormattedString.Spans>
                                                     </FormattedString>
                                                 </Label.FormattedText>
                                             </Label>
                                         </StackLayout>
-                                    </Frame>
+                                    </Border>
 
                                     <StackLayout
                                         Margin="0,25,0,5"
                                         CompressedLayout.IsHeadless="True"
-                                        IsVisible="{x:Bind steps[0].status is not eq 'approved'}"
+                                        IsVisible="{x:Bind CanApprove}"
                                         Orientation="Horizontal"
                                         Spacing="10">
                                         <Entry
@@ -214,7 +216,7 @@
                                             TextColor="White" />
                                     </StackLayout>
                                 </StackLayout>
-                            </Frame>
+                            </Border>
 
                         </DataTemplate>
 
@@ -229,9 +231,9 @@
 
                 <vlv:VirtualListView
                     Adapter="{x:Bind Records}"
+                    BackgroundColor="#201f1e"
                     OnSelectedItemsChanged="VirtualListView_OnSelectedItemsChanged"
                     SelectedItem="{x:Bind SelectedRecordPosition}"
-                    BackgroundColor="#201f1e"
                     SelectionMode="Single"
                     VerticalOptions="FillAndExpand">
                     <vlv:VirtualListView.ItemTemplate>
