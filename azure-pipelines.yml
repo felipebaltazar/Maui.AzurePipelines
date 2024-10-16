@@ -120,6 +120,10 @@ stages:
         demands:
         - MSBuild
       steps:
+      - task: CmdLine@2
+        displayName: 'Set Xcode v16.0.0'
+        inputs:
+          script: echo '##vso[task.setvariable variable=MD_APPLE_SDK_ROOT;]'/Applications/Xcode_16.0.0.app;sudo xcode-select --switch /Applications/Xcode_16.0.0.app/Contents/Developer
 
       - task: UseDotNet@2
         inputs:
