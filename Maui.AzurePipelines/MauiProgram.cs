@@ -62,6 +62,13 @@ public static class MauiProgram
                     try
                     {
                         var response = await provider.GetService<IServerDrivenUIApi>().GetUIElementAsync(key);
+
+                        SentrySdk.AddBreadcrumb("XAML", "ServerDrivenUI", "ServerUIElement",
+                            data: new Dictionary<string, string>
+                            {
+                                { "Xaml", response.ToXaml() }
+                            });
+
                         return response;
                     }
                     catch (Exception e)
