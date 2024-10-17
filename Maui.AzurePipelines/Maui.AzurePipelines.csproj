@@ -26,6 +26,7 @@
   <PropertyGroup Condition="$(TargetFramework.Contains('-ios'))">
     <UseInterpreter>true</UseInterpreter>
     <MtouchInterpreter>-all</MtouchInterpreter>
+    <MtouchNoSymbolStrip>True</MtouchNoSymbolStrip>
   </PropertyGroup>
   
   <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|net8.0-ios|AnyCPU'">
