@@ -25,10 +25,11 @@ public static class MauiProgram
 {
     public static MauiApp CreateMauiApp()
     {
-        TaskExtensions.SetDefaultExceptionHandling(ex => {
+        TaskExtensions.SetDefaultExceptionHandling(ex =>
+        {
             Debug.Write(ex.ToString());
 
-            if(Debugger.IsAttached)
+            if (Debugger.IsAttached)
                 Debugger.Break();
         });
 
@@ -43,7 +44,8 @@ public static class MauiProgram
                 fonts.AddFont("DevOpsIcons.ttf", "DevOpsIcons");
                 fonts.AddFont("FontAwesomeSolid.otf", "FontAwesomeSolid");
             })
-            .UseSentry(options => {
+            .UseSentry(options =>
+            {
                 options.Dsn = "https://9443fbd4b733ff0976c2aeeb237a4913@o4508135677755392.ingest.us.sentry.io/4508135679328256";
 
 #if DEBUG
@@ -55,8 +57,18 @@ public static class MauiProgram
             {
                 s.UIElementCacheExpiration = TimeSpan.FromMinutes(1);
 
-                s.RegisterElementGetter((key, provider) =>
-                    provider.GetService<IServerDrivenUIApi>().GetUIElementAsync(key));
+                s.RegisterElementGetter(async (key, provider) =>
+                {
+                    try
+                    {
+                        var response = await provider.GetService<IServerDrivenUIApi>().GetUIElementAsync(key);
+                        return response;
+                    }
+                    catch (Exception e)
+                    {
+                        return null;
+                    }
+                });
 
                 s.AddServerElement("595597a8-25df-4d60-99f4-4b5bad595403");
             })
