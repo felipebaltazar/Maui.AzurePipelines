@@ -7,6 +7,7 @@ using Refit;
 using System.Diagnostics;
 using System.Text.Json.Serialization;
 using static PipelineApproval.Infrastructure.Constants.Url;
+using IHttpClientFactory = PipelineApproval.Abstractions.IHttpClientFactory;
 
 namespace PipelineApproval.Infrastructure.Extensions;
 
