@@ -73,11 +73,11 @@ public static class MauiProgram
                                 var value = reader.Read();
                             }
 
-                            SentrySdk.AddBreadcrumb("XML Parser", "Success", "ServerUIElement",
+                            SentrySdk.CaptureException(new Exception("XML Parser Success"), s => s.AddBreadcrumb("Success", "ServerUIElement",
                                 data: new Dictionary<string, string>
                                 {
                                     { "Xaml", xaml }
-                                });
+                                }));
                         }
                         catch (Exception ex)
                         {
