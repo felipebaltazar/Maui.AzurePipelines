@@ -167,6 +167,7 @@
         </CollectionView>
 
         <ServerDrivenView
+            x:Name="sdv"
             Grid.Row="3"
             Grid.RowSpan="2"
             Grid.ColumnSpan="3"

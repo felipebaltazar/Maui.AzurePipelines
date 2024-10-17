@@ -34,4 +34,9 @@ public partial class App : Application
         base.OnSleep();
         MainPage?.RaiseOnPausedAware();
     }
+
+    protected override Window CreateWindow(IActivationState? activationState)
+    {
+        return new Window(_navigationService.InitializeNavigation());
+    }
 }

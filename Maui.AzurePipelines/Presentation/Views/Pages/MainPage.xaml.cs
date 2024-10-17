@@ -10,6 +10,7 @@ public partial class MainPage : BaseContentPage
     public MainPage()
     {
         InitializeComponent();
+        sdv.OnErrorEvent = (ex) => SentrySdk.CaptureException(ex);
     }
 
     private async void TapGestureRecognizer_Tapped(object sender, TappedEventArgs e)

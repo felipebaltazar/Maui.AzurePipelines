@@ -119,7 +119,7 @@ public static class MauiProgram
     {
         sCollection.AddSingleton(MopupService.Instance);
         sCollection.AddSingleton<IBrowserService, BrowserService>();
-        sCollection.AddSingleton<ILogger, AppCenterLoggerService>();
+        sCollection.AddSingleton<ILogger, SentryLoggerService>();
         sCollection.AddSingleton<IMainThreadService, MainThreadService>();
         sCollection.AddSingleton<IPreferencesService, PreferencesService>();
         sCollection.AddSingleton<ISecureStorageService, SecureStorageService>();
