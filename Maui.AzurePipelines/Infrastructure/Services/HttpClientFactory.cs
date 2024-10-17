@@ -2,6 +2,7 @@
 using PipelineApproval.Models;
 using System.Collections.Concurrent;
 using System.Net;
+using IHttpClientFactory = PipelineApproval.Abstractions.IHttpClientFactory;
 
 namespace PipelineApproval.Infrastructure.Services;
 
@@ -90,7 +91,8 @@ public sealed class HttpClientFactory : IHttpClientFactory
         var httpClientLoggingHandler = new HttpLoggingHandler(shouldLogHttpResponseContent, httpClientHandler);
         return new ActiveHandlerTrackingEntry(name, httpClientLoggingHandler);
 #else
-        return new ActiveHandlerTrackingEntry(name, httpClientHandler);
+        var sentryHandler = new SentryHttpMessageHandler(httpClientHandler);
+        return new ActiveHandlerTrackingEntry(name, sentryHandler);
 #endif
     }
 }
