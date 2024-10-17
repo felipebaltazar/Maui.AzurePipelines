@@ -14,6 +14,7 @@ using Maui.ServerDrivenUI;
 using PipelineApproval.Abstractions.Data;
 using System.Diagnostics;
 using TaskExtensions = PipelineApproval.Infrastructure.Extensions.TaskExtensions;
+using System.Xml;
 
 #if DEBUG
 using DotNet.Meteor.HotReload.Plugin;
@@ -62,12 +63,30 @@ public static class MauiProgram
                     try
                     {
                         var response = await provider.GetService<IServerDrivenUIApi>().GetUIElementAsync(key);
+                        var xaml = response.ToXaml();
 
-                        SentrySdk.AddBreadcrumb("XAML", "ServerDrivenUI", "ServerUIElement",
-                            data: new Dictionary<string, string>
+                        try
+                        {
+                            using (var textreader = new StringReader(xaml))
+                            using (var reader = XmlReader.Create(textreader))
                             {
-                                { "Xaml", response.ToXaml() }
-                            });
+                                var value = reader.Read();
+                            }
+
+                            SentrySdk.AddBreadcrumb("XML Parser", "Success", "ServerUIElement",
+                                data: new Dictionary<string, string>
+                                {
+                                    { "Xaml", xaml }
+                                });
+                        }
+                        catch (Exception ex)
+                        {
+                            SentrySdk.CaptureException(ex, s => s.AddBreadcrumb("XAML", "ServerDrivenUI", "ServerUIElement",
+                            data: new Dictionary<string, string>
+                                {
+                                    { "Xaml", xaml }
+                                }));
+                        }
 
                         return response;
                     }
