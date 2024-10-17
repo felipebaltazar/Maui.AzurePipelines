@@ -22,13 +22,13 @@
     <SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'ios'">11.0</SupportedOSPlatformVersion>
     <SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'android'">21.0</SupportedOSPlatformVersion>
   </PropertyGroup>
-  
+
   <PropertyGroup Condition="$(TargetFramework.Contains('-ios'))">
     <UseInterpreter>true</UseInterpreter>
     <MtouchInterpreter>-all</MtouchInterpreter>
     <MtouchNoSymbolStrip>True</MtouchNoSymbolStrip>
   </PropertyGroup>
-  
+
   <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|net8.0-ios|AnyCPU'">
     <CreatePackage>false</CreatePackage>
     <CodesignEntitlements>Platforms\iOS\Entitlements.plist</CodesignEntitlements>
@@ -64,28 +64,28 @@
     <!-- Raw Assets (also remove the "Resources\Raw" prefix) -->
     <MauiAsset Include="Resources\Raw\**" LogicalName="%(RecursiveDir)%(Filename)%(Extension)" />
 
-    <Folder Include="Resources\AppIcon\" />
-
     <!-- Android native resources -->
     <AndroidResource Include="Platforms\Android\drawable\**" />
     <AndroidResource Include="Platforms\Android\layout\**" />
     <AndroidResource Include="Platforms\Android\mipmap*\**" />
-    <None Remove="pre-release.apk" />
     <AndroidEnvironment Include="Platforms\Android\GarbageCollector.config" />
   </ItemGroup>
 
 
   <!-- Packages -->
-  <ItemGroup>
-    <PackageReference Include="CompiledBindings.MAUI" Version="1.0.18" />
+  <ItemGroup Condition="'$(Configuration)'=='Debug'">
     <PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="8.0.1" />
-    <PackageReference Include="Mopups" Version="1.3.2" />
-    <PackageReference Include="Polly" Version="8.3.0" />
-    <PackageReference Include="Redth.Maui.VirtualListView" Version="0.3.1" />
-    <PackageReference Include="Refit" Version="7.0.0" />
     <PackageReference Include="DotNetMeteor.HotReload.Plugin" Version="3.*" />
+  </ItemGroup>
+  
+  <ItemGroup>
+    <PackageReference Include="Polly" Version="8.3.0" />
+    <PackageReference Include="Refit" Version="7.0.0" />
+    <PackageReference Include="Mopups" Version="1.3.2" />
     <PackageReference Include="Sentry.Maui" Version="4.12.1" />
+    <PackageReference Include="CompiledBindings.MAUI" Version="1.0.18" />
     <PackageReference Include="ServerDrivenUI.Maui" Version="8.0.47-pre" />
+    <PackageReference Include="Redth.Maui.VirtualListView" Version="0.3.1" />
     <PackageReference Include="Microsoft.Maui.Controls" Version="8.0.6" />
     <PackageReference Include="Microsoft.Maui.Controls.Compatibility" Version="8.0.6" />
   </ItemGroup>
