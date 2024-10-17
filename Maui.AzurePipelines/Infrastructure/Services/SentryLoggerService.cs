@@ -27,11 +27,17 @@ public class SentryLoggerService : ILogger
             case LogLevel.Warning:
                 SentrySdk.AddBreadcrumb(formatter(state, exception), level: BreadcrumbLevel.Warning);
                 break;
-            case LogLevel.Error:
+            case LogLevel.Error when exception is not null:
                 SentrySdk.CaptureException(exception);
                 break;
-            case LogLevel.Critical:
+            case LogLevel.Error when exception is null:
+                SentrySdk.AddBreadcrumb(formatter(state, exception), level: BreadcrumbLevel.Error);
+                break;
+            case LogLevel.Critical when exception is not null:
                 SentrySdk.CaptureException(exception);
+                break;
+            case LogLevel.Critical when exception is null:
+                SentrySdk.AddBreadcrumb(formatter(state, exception), level: BreadcrumbLevel.Critical);
                 break;
             case LogLevel.Trace:
                 SentrySdk.AddBreadcrumb(formatter(state, exception), level: BreadcrumbLevel.Info);

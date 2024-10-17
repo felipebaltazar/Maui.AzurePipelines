@@ -85,8 +85,6 @@ public static class MauiProgram
 #if DEBUG
         builder.EnableHotReload()
         .Logging.AddDebug();
-#else
-        builder.Logging.AddSentry();
 #endif
         var serviceCollection = builder.Services;
 
@@ -131,6 +129,8 @@ public static class MauiProgram
         sCollection.AddSingleton<IMainThreadService, MainThreadService>();
         sCollection.AddSingleton<IPreferencesService, PreferencesService>();
         sCollection.AddSingleton<ISecureStorageService, SecureStorageService>();
+
+        sCollection.AddSingleton<ILogger, SentryLoggerService>();
 
         sCollection.AddSingleton<INavigationService, NavigationService>();
         sCollection.AddSingleton<ILazyDependency<INavigationService>, LazyDependency<INavigationService>>();
