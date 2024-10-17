@@ -66,6 +66,7 @@ public static class MauiProgram
                     }
                     catch (Exception e)
                     {
+                        SentrySdk.CaptureException(e);
                         return null;
                     }
                 });
