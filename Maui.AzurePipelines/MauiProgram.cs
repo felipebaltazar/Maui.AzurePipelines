@@ -43,6 +43,14 @@ public static class MauiProgram
                 fonts.AddFont("DevOpsIcons.ttf", "DevOpsIcons");
                 fonts.AddFont("FontAwesomeSolid.otf", "FontAwesomeSolid");
             })
+            .UseSentry(options => {
+                options.Dsn = "https://9443fbd4b733ff0976c2aeeb237a4913@o4508135677755392.ingest.us.sentry.io/4508135679328256";
+
+#if DEBUG
+                options.Debug = true;
+#endif
+                options.TracesSampleRate = 1.0;
+            })
             .ConfigureServerDrivenUI(s =>
             {
                 s.UIElementCacheExpiration = TimeSpan.FromMinutes(1);
