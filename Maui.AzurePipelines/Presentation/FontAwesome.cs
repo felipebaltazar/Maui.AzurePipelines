@@ -1,6 +1,6 @@
 ﻿namespace PipelineApproval.Presentation;
 
-static class FontAwesome
+public static class FontAwesome
 {
     public const string Space = "\u0020";
     public const string Hyphen = "\u002d";
