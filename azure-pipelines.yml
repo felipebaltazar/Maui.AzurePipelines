@@ -116,17 +116,17 @@ stages:
       dependsOn: []
       pool:
         #vmimage: 'macOS-latest'
-        vmImage: macOS-14
+        vmImage: macOS-15
         demands:
         - MSBuild
       steps:
 
-      - task: Bash@3
-        displayName: Select XCode 16
-        inputs:
-          targetType: 'inline'
-          script: |
-            sudo xcode-select -switch /Applications/Xcode_16.app/Contents/Developer
+      #- task: Bash@3
+      #  displayName: Select XCode 16
+      #  inputs:
+      #    targetType: 'inline'
+      #    script: |
+      #      sudo xcode-select -switch /Applications/Xcode_16.app/Contents/Developer
 
       - task: UseDotNet@2
         inputs:
